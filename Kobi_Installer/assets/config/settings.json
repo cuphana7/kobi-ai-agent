@@ -1,0 +1,86 @@
+{
+  "modelProviders": {
+    "openai": [
+      {
+        "id": "Qwen3-Next-80B-A3B-Instruct",
+        "name": "정보(중요)단말",
+        "envKey": "QWEN_CUSTOM_API_KEY_OPENAI_HTTP_10_210_169_48_8103_V1_8517E24EE066",
+        "baseUrl": "http://codex.kbcard.com:443/model/qwen3-next/v1"
+      },
+      {
+        "id": "Qwen3-Next-80B-A3B-Instruct",
+        "name": "업무단말",
+        "envKey": "QWEN_CUSTOM_API_KEY_OPENAI_HTTP_10_210_169_48_8103_V1_8517E24EE066",
+        "baseUrl": "http://codex.kbcard.com:8080/model/qwen3-next/v1"
+      }
+    ]
+  },
+  "env": {
+    "VLLM_API_KEY": "not-needed",
+    "QWEN_CUSTOM_API_KEY_OPENAI_HTTP_10_210_169_48_8103_V1_8517E24EE066": "df"
+  },
+  "security": {
+    "auth": {
+      "selectedType": "openai"
+    },
+    "folderTrust": {
+      "enabled": true
+    }
+  },
+  "model": {
+    "name": "Qwen3-Next-80B-A3B-Instruct"
+  },
+  "general": {
+    "enableAutoUpdate": false,
+    "showSessionRecap": false
+  },
+  "ui": {
+    "hideBanner": true,
+    "hideTips": true,
+    "compactMode": false,
+    "customWittyPhrases": [
+      "Kobi 가 생각하는 중입니다.",
+      "Kobi 가 찾는 중입니다.",
+      "Kobi 가 검토하는 중입니다."
+    ]
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
+  },
+  "telemetry": {
+    "enabled": false
+  },
+  "tools": {
+    "approvalMode": "default"
+  },
+  "permissions": {
+    "ask": [
+      "Edit",
+      "Bash"
+    ],
+    "deny": [
+      "WebFetch",
+      "Read(.env)",
+      "Read(**/*.jks)",
+      "Read(**/*.p12)",
+      "Read(**/*.key)",
+      "Read(**/*.pem)",
+      "Edit(**/*.jks)",
+      "Edit(**/*.p12)",
+      "Edit(**/*.key)",
+      "Edit(**/*.pem)",
+      "Bash(git push *)",
+      "Bash(del *)",
+      "Bash(rm *)",
+      "Bash(format *)"
+    ]
+  },
+  "context": {
+    "fileFiltering": {
+      "respectGitIgnore": true,
+      "respectQwenIgnore": true,
+      "enableRecursiveFileSearch": true,
+      "enableFuzzySearch": true
+    }
+  }
+}

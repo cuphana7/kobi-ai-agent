@@ -1,0 +1,40 @@
+0 verbose cli /usr/local/nvm/versions/node/v24.16.0/bin/node /usr/local/nvm/versions/node/v24.16.0/bin/npm
+1 info using npm@11.17.0
+2 info using node@v24.16.0
+3 silly config load:file:/usr/local/nvm/versions/node/v24.16.0/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/cuphana7/kobi-package/npm-seed/.npmrc
+5 silly config load:file:/home/cuphana7/.npmrc
+6 silly config load:file:/usr/local/nvm/versions/node/v24.16.0/etc/npmrc
+7 verbose title npm install @qwen-code/qwen-code@0.19.8
+8 verbose argv "install" "@qwen-code/qwen-code@0.19.8" "--cache" "../Kobi_Installer/assets/npm-cache" "--no-audit" "--no-fund"
+9 verbose logfile logs-max:10 dir:/home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-07-09T03_14_33_591Z-
+10 verbose logfile /home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-07-09T03_14_33_591Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly logfile done cleaning log files
+13 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+14 silly idealTree buildDeps
+15 silly fetch manifest @qwen-code/qwen-code@0.19.8
+16 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code cache-miss
+17 http fetch GET 200 https://registry.npmjs.org/@qwen-code%2fqwen-code 163ms (cache updated)
+18 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code set size:undefined disposed:false
+19 silly placeDep ROOT @qwen-code/qwen-code@0.19.8 REPLACE for:  want: 0.19.8
+20 silly reify mark retired [
+20 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/qwen-code',
+20 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/qwen'
+20 silly reify ]
+21 silly reify moves {
+21 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/qwen-code': '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/.qwen-code-bbfnVX8C',
+21 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/qwen': '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/.qwen-AQN6r1bt'
+21 silly reify }
+22 http cache @qwen-code/qwen-code@https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.19.8.tgz 0ms (cache hit)
+23 silly tarball no local data for @qwen-code/qwen-code@https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.19.8.tgz. Extracting by manifest.
+24 http fetch GET 200 https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.19.8.tgz 1559ms (cache miss)
+25 silly CHANGE node_modules/@qwen-code/qwen-code
+26 silly CHANGE node_modules/@qwen-code/qwen-code/node_modules/@qwen-code/audio-capture
+27 silly CHANGE node_modules/@qwen-code/qwen-code/node_modules/@qwen-code/audio-capture/node_modules/node-gyp-build
+28 verbose cwd /home/cuphana7/kobi-package/npm-seed
+29 verbose os Linux 6.6.137+
+30 verbose node v24.16.0
+31 verbose npm  v11.17.0
+32 verbose exit 0
+33 info ok

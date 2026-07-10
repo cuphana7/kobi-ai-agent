@@ -1,0 +1,121 @@
+0 verbose cli /usr/local/nvm/versions/node/v24.16.0/bin/node /usr/local/nvm/versions/node/v24.16.0/bin/npm
+1 info using npm@11.17.0
+2 info using node@v24.16.0
+3 silly config load:file:/usr/local/nvm/versions/node/v24.16.0/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/cuphana7/kbcode-package/npm-seed/.npmrc
+5 silly config load:file:/home/cuphana7/.npmrc
+6 silly config load:file:/home/cuphana7/kbcode-package/npm-seed/etc/npmrc
+7 verbose title npm install @qwen-code/qwen-code@latest
+8 verbose argv "install" "--prefix" "./npm-seed" "--cache" "./npm-cache" "--include" "optional" "--ignore-scripts" "--os" "win32" "--cpu" "x64" "@qwen-code/qwen-code@latest"
+9 verbose logfile logs-max:10 dir:/home/cuphana7/kbcode-package/npm-cache/_logs/2026-06-19T07_03_30_587Z-
+10 verbose logfile /home/cuphana7/kbcode-package/npm-cache/_logs/2026-06-19T07_03_30_587Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly allow-scripts no package.json at prefix Could not read package.json: Error: ENOENT: no such file or directory, open '/home/cuphana7/kbcode-package/npm-seed/package.json'
+13 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+14 silly packumentCache corgi:https://registry.npmjs.org/@qwen-code%2fqwen-code cache-miss
+15 http fetch GET 200 https://registry.npmjs.org/npm 160ms
+16 http fetch GET 200 https://registry.npmjs.org/@qwen-code%2fqwen-code 721ms (cache miss)
+17 silly packumentCache corgi:https://registry.npmjs.org/@qwen-code%2fqwen-code set size:undefined disposed:false
+18 silly idealTree buildDeps
+19 silly fetch manifest @qwen-code/qwen-code@0.18.3
+20 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code cache-miss
+21 http fetch GET 200 https://registry.npmjs.org/@qwen-code%2fqwen-code 402ms (cache miss)
+22 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code set size:undefined disposed:false
+23 silly placeDep ROOT @qwen-code/qwen-code@0.18.3 OK for:  want: 0.18.3
+24 silly fetch manifest @lydell/node-pty@1.2.0-beta.10
+25 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty cache-miss
+26 silly fetch manifest @teddyzhu/clipboard@0.0.5
+27 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard cache-miss
+28 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty 59ms (cache miss)
+29 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty set size:undefined disposed:false
+30 silly fetch manifest @lydell/node-pty-linux-x64@1.2.0-beta.10
+31 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-linux-x64 cache-miss
+32 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-linux-x64 333ms (cache miss)
+33 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-linux-x64 set size:undefined disposed:false
+34 silly fetch manifest @lydell/node-pty-win32-x64@1.2.0-beta.10
+35 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-win32-x64 cache-miss
+36 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-win32-x64 55ms (cache miss)
+37 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-win32-x64 set size:undefined disposed:false
+38 silly fetch manifest @lydell/node-pty-darwin-x64@1.2.0-beta.10
+39 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-darwin-x64 cache-miss
+40 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard 580ms (cache miss)
+41 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard set size:undefined disposed:false
+42 silly fetch manifest @lydell/node-pty-win32-arm64@1.2.0-beta.10
+43 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-win32-arm64 cache-miss
+44 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-darwin-x64 262ms (cache miss)
+45 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-darwin-x64 set size:undefined disposed:false
+46 silly fetch manifest @lydell/node-pty-darwin-arm64@1.2.0-beta.10
+47 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-darwin-arm64 cache-miss
+48 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-win32-arm64 264ms (cache miss)
+49 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-win32-arm64 set size:undefined disposed:false
+50 silly fetch manifest @teddyzhu/clipboard-darwin-x64@0.0.5
+51 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-x64 cache-miss
+52 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-darwin-arm64 481ms (cache miss)
+53 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-darwin-arm64 set size:undefined disposed:false
+54 silly fetch manifest @teddyzhu/clipboard-darwin-arm64@0.0.5
+55 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-arm64 cache-miss
+56 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-x64 633ms (cache miss)
+57 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-x64 set size:undefined disposed:false
+58 silly fetch manifest @teddyzhu/clipboard-linux-x64-gnu@0.0.5
+59 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-x64-gnu cache-miss
+60 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-arm64 583ms (cache miss)
+61 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-arm64 set size:undefined disposed:false
+62 silly fetch manifest @teddyzhu/clipboard-win32-x64-msvc@0.0.5
+63 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-x64-msvc cache-miss
+64 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-x64-gnu 579ms (cache miss)
+65 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-x64-gnu set size:undefined disposed:false
+66 silly fetch manifest @teddyzhu/clipboard-linux-arm64-gnu@0.0.5
+67 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-arm64-gnu cache-miss
+68 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-x64-msvc 563ms (cache miss)
+69 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-x64-msvc set size:undefined disposed:false
+70 silly fetch manifest @teddyzhu/clipboard-win32-arm64-msvc@0.0.5
+71 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-arm64-msvc cache-miss
+72 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-arm64-gnu 632ms (cache miss)
+73 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-arm64-gnu set size:undefined disposed:false
+74 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-arm64-msvc 618ms (cache miss)
+75 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-arm64-msvc set size:undefined disposed:false
+76 silly placeDep ROOT @lydell/node-pty@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.18.3 want: 1.2.0-beta.10
+77 silly placeDep ROOT @lydell/node-pty-darwin-arm64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.18.3 want: 1.2.0-beta.10
+78 silly placeDep ROOT @lydell/node-pty-darwin-x64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.18.3 want: 1.2.0-beta.10
+79 silly placeDep ROOT @lydell/node-pty-linux-x64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.18.3 want: 1.2.0-beta.10
+80 silly placeDep ROOT @lydell/node-pty-win32-arm64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.18.3 want: 1.2.0-beta.10
+81 silly placeDep ROOT @lydell/node-pty-win32-x64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.18.3 want: 1.2.0-beta.10
+82 silly placeDep ROOT @teddyzhu/clipboard@0.0.5 OK for: @qwen-code/qwen-code@0.18.3 want: 0.0.5
+83 silly placeDep ROOT @teddyzhu/clipboard-darwin-arm64@0.0.5 OK for: @qwen-code/qwen-code@0.18.3 want: 0.0.5
+84 silly placeDep ROOT @teddyzhu/clipboard-darwin-x64@0.0.5 OK for: @qwen-code/qwen-code@0.18.3 want: 0.0.5
+85 silly placeDep ROOT @teddyzhu/clipboard-linux-arm64-gnu@0.0.5 OK for: @qwen-code/qwen-code@0.18.3 want: 0.0.5
+86 silly placeDep ROOT @teddyzhu/clipboard-linux-x64-gnu@0.0.5 OK for: @qwen-code/qwen-code@0.18.3 want: 0.0.5
+87 silly placeDep ROOT @teddyzhu/clipboard-win32-arm64-msvc@0.0.5 OK for: @qwen-code/qwen-code@0.18.3 want: 0.0.5
+88 silly placeDep ROOT @teddyzhu/clipboard-win32-x64-msvc@0.0.5 OK for: @qwen-code/qwen-code@0.18.3 want: 0.0.5
+89 silly fetch manifest @lydell/node-pty-linux-arm64@1.2.0-beta.10
+90 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-linux-arm64 cache-miss
+91 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-linux-arm64 55ms (cache miss)
+92 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-linux-arm64 set size:undefined disposed:false
+93 silly placeDep ROOT @lydell/node-pty-linux-arm64@1.2.0-beta.10 OK for: @lydell/node-pty@1.2.0-beta.10 want: 1.2.0-beta.10
+94 silly reify moves {}
+95 http cache @teddyzhu/clipboard@https://registry.npmjs.org/@teddyzhu/clipboard/-/clipboard-0.0.5.tgz 1ms (cache hit)
+96 http cache @teddyzhu/clipboard-win32-x64-msvc@https://registry.npmjs.org/@teddyzhu/clipboard-win32-x64-msvc/-/clipboard-win32-x64-msvc-0.0.5.tgz 0ms (cache hit)
+97 http cache @lydell/node-pty-win32-x64@https://registry.npmjs.org/@lydell/node-pty-win32-x64/-/node-pty-win32-x64-1.2.0-beta.10.tgz 0ms (cache hit)
+98 http cache @lydell/node-pty@https://registry.npmjs.org/@lydell/node-pty/-/node-pty-1.2.0-beta.10.tgz 0ms (cache hit)
+99 http cache @qwen-code/qwen-code@https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.18.3.tgz 0ms (cache hit)
+100 silly tarball no local data for @teddyzhu/clipboard@https://registry.npmjs.org/@teddyzhu/clipboard/-/clipboard-0.0.5.tgz. Extracting by manifest.
+101 silly tarball no local data for @teddyzhu/clipboard-win32-x64-msvc@https://registry.npmjs.org/@teddyzhu/clipboard-win32-x64-msvc/-/clipboard-win32-x64-msvc-0.0.5.tgz. Extracting by manifest.
+102 silly tarball no local data for @lydell/node-pty-win32-x64@https://registry.npmjs.org/@lydell/node-pty-win32-x64/-/node-pty-win32-x64-1.2.0-beta.10.tgz. Extracting by manifest.
+103 silly tarball no local data for @lydell/node-pty@https://registry.npmjs.org/@lydell/node-pty/-/node-pty-1.2.0-beta.10.tgz. Extracting by manifest.
+104 silly tarball no local data for @qwen-code/qwen-code@https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.18.3.tgz. Extracting by manifest.
+105 http fetch GET 200 https://registry.npmjs.org/@teddyzhu/clipboard/-/clipboard-0.0.5.tgz 236ms (cache miss)
+106 http fetch GET 200 https://registry.npmjs.org/@lydell/node-pty/-/node-pty-1.2.0-beta.10.tgz 265ms (cache miss)
+107 http fetch GET 200 https://registry.npmjs.org/@teddyzhu/clipboard-win32-x64-msvc/-/clipboard-win32-x64-msvc-0.0.5.tgz 361ms (cache miss)
+108 http fetch GET 200 https://registry.npmjs.org/@lydell/node-pty-win32-x64/-/node-pty-win32-x64-1.2.0-beta.10.tgz 716ms (cache miss)
+109 http fetch GET 200 https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.18.3.tgz 1374ms (cache miss)
+110 silly ADD node_modules/@teddyzhu/clipboard-win32-x64-msvc
+111 silly ADD node_modules/@teddyzhu/clipboard
+112 silly ADD node_modules/@lydell/node-pty-win32-x64
+113 silly ADD node_modules/@lydell/node-pty
+114 silly ADD node_modules/@qwen-code/qwen-code
+115 verbose cwd /home/cuphana7/kbcode-package
+116 verbose os Linux 6.6.137+
+117 verbose node v24.16.0
+118 verbose npm  v11.17.0
+119 verbose exit 0
+120 info ok
