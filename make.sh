@@ -140,6 +140,11 @@ cat <<EOF > "$RUNTIME_DIR/qwen/package.json"
 }
 EOF
 
+if ! command -v npm >/dev/null 2>&1; then
+  echo "Error: npm command not found in this shell. Cannot pre-install Qwen Code offline."
+  exit 1
+fi
+
 # npm install 실행 (Windows 64비트 플랫폼 타겟팅)
 npm install \
   --prefix "$RUNTIME_DIR/qwen" \
@@ -151,6 +156,16 @@ npm install \
   --include=optional \
   --no-audit \
   --no-fund
+if [ $? -ne 0 ]; then
+  echo "Error: npm install failed while pre-installing Qwen Code offline."
+  exit 1
+fi
+
+QWEN_CLI_ENTRY="$RUNTIME_DIR/qwen/node_modules/@qwen-code/qwen-code/cli-entry.js"
+if [ ! -f "$QWEN_CLI_ENTRY" ]; then
+  echo "Error: $QWEN_CLI_ENTRY was not produced by npm install. Aborting build so a broken installer isn't packaged."
+  exit 1
+fi
 
 # (3) 설정 파일 및 지침 파일 복사
 echo "Copying config files into Kobi_Runtime..."
@@ -206,37 +221,6 @@ try {
 } catch {
 }
 
-function Show-KobiBanner {
-    Write-Host ""
-    Write-Host "╔══════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║                                                              ║" -ForegroundColor Cyan
-    Write-Host "║                         Kobi is ready.                       ║" -ForegroundColor Yellow
-    Write-Host "║                                                              ║" -ForegroundColor Cyan
-    Write-Host "║                         .─────────.                          ║" -ForegroundColor Cyan
-    Write-Host "║                        /  _     _  \                         ║" -ForegroundColor Cyan
-    Write-Host "║                       |  (•)   (•)  |                        ║" -ForegroundColor Cyan
-    Write-Host "║                       |      ▴      |                        ║" -ForegroundColor Cyan
-    Write-Host "║                       |   \_____/   |                        ║" -ForegroundColor Cyan
-    Write-Host "║                        \___________/                         ║" -ForegroundColor Cyan
-    Write-Host "║                           /| KB |\                            ║" -ForegroundColor Cyan
-    Write-Host "║                          /_|____|_\                           ║" -ForegroundColor Cyan
-    Write-Host "║                            / <> \                             ║" -ForegroundColor Cyan
-    Write-Host "║                           /______\                            ║" -ForegroundColor Cyan
-    Write-Host "║                                                              ║" -ForegroundColor Cyan
-    Write-Host "║                    KB AI ASSISTANT                      ║" -ForegroundColor White
-    Write-Host "║                                                              ║" -ForegroundColor Cyan
-    Write-Host "╠══════════════════════════════════════════════════════════════╣" -ForegroundColor Cyan
-    Write-Host "║  개발자에게는 코드 동료, 일반 업무자에게는 정리 도우미입니다. ║" -ForegroundColor Gray
-    Write-Host "║  코드 분석 · 호출 흐름 확인 · 코드 리뷰 · 업무 정리를 지원합니다.║" -ForegroundColor Gray
-    Write-Host "║                                                              ║" -ForegroundColor Cyan
-    Write-Host "║  적용 전 반드시 변경 계획과 diff를 검토하세요.                ║" -ForegroundColor Yellow
-    Write-Host "║  인증서, 운영 설정, 패스워드 등 민감 정보는 분석하지 않습니다. ║" -ForegroundColor Yellow
-    Write-Host "╚══════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
-    Write-Host ""
-}
-
-Show-KobiBanner
-
 $AppendPrompt = @"
 반드시 한국어로 답변한다.
 사용자가 영어로 요청하지 않는 한 영어로 답변하지 않는다.
@@ -273,6 +257,10 @@ mkdir -p "$DIST_DIR/Kobi_Installer/assets"
 cp Kobi_Installer/assets/jennifer-monitor.skill "$DIST_DIR/Kobi_Installer/assets/"
 cp Kobi_Installer/assets/project-bootstrap.skill "$DIST_DIR/Kobi_Installer/assets/"
 cp Kobi_Installer/assets/frism-cm.skill "$DIST_DIR/Kobi_Installer/assets/"
+
+# Computer Use(화면 읽기 전용) 드라이버 자산 복사
+mkdir -p "$DIST_DIR/Kobi_Installer/assets/computer-use"
+cp Kobi_Installer/assets/computer-use/cua-driver-rs-0.5.2-windows-x86_64.zip "$DIST_DIR/Kobi_Installer/assets/computer-use/"
 
 # Kobi_Runtime 복사
 cp -r "$RUNTIME_DIR" "$DIST_DIR/Kobi_Installer/"

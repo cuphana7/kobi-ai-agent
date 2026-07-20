@@ -36,7 +36,9 @@ kobi-package/
     ├── assets/                 # 필수 자원 폴더
     │   ├── jennifer-monitor.skill # 제니퍼 APM 모니터링 스킬 파일
     │   ├── project-bootstrap.skill # 프로젝트 부트스트랩 스킬 파일
-    │   └── frism-cm.skill      # Frism 형상관리 연동 스킬 파일
+    │   ├── frism-cm.skill      # Frism 형상관리 연동 스킬 파일
+    │   └── computer-use/       # Computer Use(화면 읽기 전용) 드라이버 자산
+    │       └── cua-driver-rs-0.5.2-windows-x86_64.zip
     └── Kobi_Runtime/           # [빌드 시 자동생성] 사전 구축된 무설치 런타임 폴더
         ├── node/               # 사전 추출된 포터블 Node.js 런타임
         ├── qwen/               # 사전 빌드된 Qwen Code 에이전트 및 의존성
@@ -60,7 +62,7 @@ kobi-package/
 2. 압축이 해제된 폴더 내부로 이동하여 **`Install-Kobi.cmd`** 파일을 마우스 더블클릭으로 실행합니다.
 3. 자동으로 PowerShell 창이 열리며 다음과 같이 총 3단계의 무설치 연동 작업이 실행됩니다.
    - **[1/3] 기존 실행 중인 Kobi 프로세스 종료 및 정리**
-   - **[2/3] 사용자 설정 및 모니터링 스킬 배포** (`~/.qwen/` 폴더에 QWEN.md 및 제니퍼 모니터링 스킬 연동)
+   - **[2/3] 사용자 설정, 모니터링 스킬 및 Computer Use 드라이버 배포** (`~/.qwen/` 폴더에 QWEN.md, 스킬, Computer Use 드라이버 연동)
    - **[3/3] 사용자 환경 변수 `Path`에 kobi 실행 경로 등록** (압축 해제된 폴더 내 `Kobi_Runtime\bin` 경로 등록)
 4. 최종 구동 상태와 버전 검증 결과가 성공적으로 출력되고 아무 키나 누르면 설치 창이 닫힙니다.
 
@@ -124,7 +126,21 @@ kobi-package/
 
 ---
 
-## 8. 개발 지침 및 보안 정책 (Security & Guardrails)
+## 8. Computer Use 화면 읽기 기능 (Read-only Screen Awareness)
+
+본 배포 패키지는 Qwen Code에 내장된 Computer Use 기능을 **화면 읽기 전용**으로 제한하여 탑재합니다. 개발자가 열어둔 로그/에러창/실행결과 등 화면에 보이는 정보를 AI가 텍스트로 읽어 분석을 보조하는 용도이며, 마우스/키보드로 PC를 직접 조작하는 기능이 아닙니다.
+
+- **드라이버 자산**: `Kobi_Installer/assets/computer-use/cua-driver-rs-0.5.2-windows-x86_64.zip`
+- **자동 배치**: 설치 스크립트 실행 시 SHA-256 체크섬을 검증한 뒤 홈 프로필(`~/.qwen/computer-use/`)에 압축을 해제합니다. 드라이버가 이미 해당 경로에 존재하면 Qwen Code는 외부망으로 추가 다운로드를 시도하지 않습니다.
+- **텍스트 기반 화면 읽기**: 연동된 사내 LLM(Qwen3-Next-80B-A3B-Instruct, vLLM 서빙)은 이미지(비전) 입력을 지원하지 않으므로, 스크린샷(PNG) 캡처 대신 `get_window_state`를 `mode: "ax"`로 호출해 화면 UI를 **Markdown 텍스트 트리**로 읽도록 `QWEN.md`에 지침이 내재화되어 있습니다.
+- **조작 기능 차단**: `settings.json`의 `permissions.deny`에서 `click`, `double_click`, `drag`, `type_text`, `press_key`, `hotkey`, `scroll`, `launch_app`, `kill_app` 등 PC를 직접 조작하는 모든 Computer Use 툴을 차단합니다. `list_windows`, `list_apps`, `get_accessibility_tree`, `get_screen_size` 등 읽기 전용 조회 툴만 허용됩니다.
+- **민감정보 인용 정책**: 본 배포본은 내부망 전용 단일 사용자 PC(실제 사용자 본인만 접근 가능한 업무 PC)에서 구동됨을 전제로 합니다. 이에 따라 메신저 쪽지, 알림 팝업 등 **개인 알림/메시지 내용**은 화면에 보이는 그대로 인용하여 분석을 보조합니다. 다만 인증서, 비밀번호, API 키, OTP/인증코드 등 **자격증명 정보**는 화면에서 조회되더라도 원문 그대로 인용하지 않으며 마스킹하거나 존재 여부만 언급합니다. (`QWEN.md`에 지침 내재화)
+- **개별 승인 필수**: 차단되지 않은 읽기 전용 툴도 Qwen Code의 기본 정책에 따라 호출 시마다 사용자 승인(Approval) 대화상자가 노출됩니다.
+- ⚠️ 본 기능 활성화는 사내 보안팀 검토 및 승인을 거쳤습니다. 배포 범위를 조작 기능까지 확장하려는 경우 반드시 보안팀 재검토가 필요합니다.
+
+---
+
+## 9. 개발 지침 및 보안 정책 (Security & Guardrails)
 
 KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본 동작이 고정되어 있습니다.
 
@@ -141,7 +157,7 @@ KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본
 
 ---
 
-## 9. 삭제 가이드 (Uninstallation)
+## 10. 삭제 가이드 (Uninstallation)
 
 이 도구는 설치 시 사용자 시스템의 레지스트리나 전체 시스템 영역을 변경하지 않고, 개발자가 임의로 추출해 둔 폴더 구조 그대로(`Kobi_Runtime`) 가동되며, 단지 사용자 프로필(`~\.qwen`) 내부의 일부 캐시 및 스킬 파일만 가집니다.
 
@@ -150,15 +166,16 @@ KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본
 1. 압축 해제했던 폴더 내부의 **`Uninstall-Kobi.cmd`** 파일을 마우스 더블클릭으로 실행합니다.
 2. 실행 시 자동으로 다음 항목이 영구 삭제됩니다.
    - 사용자 환경 변수 `Path`에서 Kobi 실행 경로(`Kobi_Runtime\bin`) 자동 분리 및 정리
-   - 사용자 홈 디렉토리 내부의 `~/.qwen` 설정 및 스킬 폴더 삭제
+   - 사용자 홈 디렉토리 내부의 `~/.qwen` 설정, 스킬 폴더 및 Computer Use 드라이버(`~/.qwen/computer-use`) 삭제
 3. 이후 압축을 풀었던 원본 폴더 자체를 휴지통에 버리면 완전히 안전하게 제거됩니다.
 
 ---
 
-## 10. 패키지 변경 이력 (Changelog)
+## 11. 패키지 변경 이력 (Changelog)
 
 | 버전 | 변경 일자 | 변경 구분 | 상세 변경 내용 | 작업자 |
 | :--- | :--- | :--- | :--- | :--- |
+| **v20260713** | 2026-07-13 | 기능 추가 (보안팀 승인) | - **Computer Use 화면 읽기 전용 기능 추가** (`cua-driver-rs` 0.5.2 오프라인 번들)<br>- 마우스/키보드 조작 툴 전체 차단, 읽기 전용 조회 툴만 허용(`permissions.deny`)<br>- 비전 미지원 사내 LLM 대응을 위해 `get_window_state(mode:"ax")` 텍스트 UI 트리 읽기 방식 채택 및 `QWEN.md` 지침 반영<br>- Install/Uninstall 스크립트에 드라이버 체크섬 검증 배치/정리 로직 추가<br>- 내부망 전용 단일 사용자 PC 전제 하에 개인 알림/메시지 인용 정책 완화(자격증명 정보는 계속 인용 금지)로 `QWEN.md` 세분화<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | 개발지원팀 |
 | **v20260709_1200** | 2026-07-09 | 기능 추가 | - **Frism 형상관리시스템(CM) 연동 스킬 추가**<br>- 자바 기반 CLI 프로그램 및 Node.js 래퍼 구현 및 연동<br>- 체크아웃/체크인, 버전이력조회, CM패키지 조회/생성, 다운로드, 배포 명령 통합 지원<br>- Install 및 Uninstall 파워셸 스크립트에 자동 압축해제 및 데이터 정리 프로세스 추가<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | Gemini CLI / 개발지원팀 |
 | **v20260702_0205** | 2026-07-02 | 성능/사용성 개선 | - **무설치 포터블 패키지 구조 전면 도입** (NPM 및 압축해제 과정 생략)<br>- 배포 패키지 빌드 자동화 스크립트(`make.sh`)에 Windows x64 타겟팅 크로스 빌드(Cross-build) 체인 내장<br>- 사용자 PC 설치 과정을 3단계로 초경량 간소화하여 연동 안정성 극대화<br>- 제니퍼 모니터링 스킬 자동 무설치 압축해제 설치 적용<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | Gemini CLI / 개발지원팀 |
 | **v20260626_0100** | 2026-06-26 | 기능 추가 / 개선 | - 제니퍼 APM 모니터링 스킬 (`jennifer-monitor`) 범용화 (특정 서비스 국한 해제)<br>- Qwen Code 시스템 지침(`QWEN.md`), README.md 및 설치 가이드 업데이트<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | Gemini CLI / 개발지원팀 |

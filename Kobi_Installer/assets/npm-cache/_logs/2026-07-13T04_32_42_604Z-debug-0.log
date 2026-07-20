@@ -1,0 +1,64 @@
+0 verbose cli /usr/local/nvm/versions/node/v24.16.0/bin/node /usr/local/nvm/versions/node/v24.16.0/bin/npm
+1 info using npm@11.17.0
+2 info using node@v24.16.0
+3 silly config load:file:/usr/local/nvm/versions/node/v24.16.0/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/cuphana7/kobi-package/npm-seed/.npmrc
+5 silly config load:file:/home/cuphana7/.npmrc
+6 silly config load:file:/usr/local/nvm/versions/node/v24.16.0/etc/npmrc
+7 verbose title npm install @qwen-code/qwen-code@0.19.9
+8 verbose argv "install" "@qwen-code/qwen-code@0.19.9" "--cache" "../Kobi_Installer/assets/npm-cache" "--no-audit" "--no-fund"
+9 verbose logfile logs-max:10 dir:/home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-07-13T04_32_42_604Z-
+10 verbose logfile /home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-07-13T04_32_42_604Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly logfile done cleaning log files
+13 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+14 silly idealTree buildDeps
+15 silly fetch manifest @qwen-code/qwen-code@0.19.9
+16 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code cache-miss
+17 http fetch GET 200 https://registry.npmjs.org/@qwen-code%2fqwen-code 193ms (cache updated)
+18 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code set size:undefined disposed:false
+19 silly placeDep ROOT @qwen-code/qwen-code@0.19.9 REPLACE for:  want: 0.19.9
+20 silly fetch manifest @qwen-code/audio-capture@0.19.9
+21 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2faudio-capture cache-miss
+22 http fetch GET 200 https://registry.npmjs.org/@qwen-code%2faudio-capture 639ms (cache miss)
+23 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2faudio-capture set size:undefined disposed:false
+24 silly placeDep ROOT @qwen-code/audio-capture@0.19.9 OK for: @qwen-code/qwen-code@0.19.9 want: 0.19.9
+25 silly fetch manifest node-gyp-build@^4.8.4
+26 silly packumentCache full:https://registry.npmjs.org/node-gyp-build cache-miss
+27 http fetch GET 200 https://registry.npmjs.org/node-gyp-build 37ms (cache miss)
+28 silly packumentCache full:https://registry.npmjs.org/node-gyp-build set size:undefined disposed:false
+29 silly placeDep ROOT node-gyp-build@4.8.4 OK for: @qwen-code/audio-capture@0.19.9 want: ^4.8.4
+30 silly reify mark retired [
+30 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/qwen-code',
+30 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/qwen'
+30 silly reify ]
+31 silly reify moves {
+31 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/qwen-code': '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/.qwen-code-bbfnVX8C',
+31 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/qwen': '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/.qwen-AQN6r1bt'
+31 silly reify }
+32 http cache @qwen-code/qwen-code@https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.19.9.tgz 0ms (cache hit)
+33 http cache node-gyp-build@https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.8.4.tgz 0ms (cache hit)
+34 http cache @qwen-code/audio-capture@https://registry.npmjs.org/@qwen-code/audio-capture/-/audio-capture-0.19.9.tgz 0ms (cache hit)
+35 silly tarball no local data for @qwen-code/qwen-code@https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.19.9.tgz. Extracting by manifest.
+36 silly tarball no local data for node-gyp-build@https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.8.4.tgz. Extracting by manifest.
+37 silly tarball no local data for @qwen-code/audio-capture@https://registry.npmjs.org/@qwen-code/audio-capture/-/audio-capture-0.19.9.tgz. Extracting by manifest.
+38 http fetch GET 200 https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.8.4.tgz 60ms (cache miss)
+39 http fetch GET 200 https://registry.npmjs.org/@qwen-code/audio-capture/-/audio-capture-0.19.9.tgz 369ms (cache miss)
+40 http fetch GET 200 https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.19.9.tgz 1534ms (cache miss)
+41 info run @qwen-code/audio-capture@0.19.9 install node_modules/@qwen-code/audio-capture node install.js
+42 info run @qwen-code/audio-capture@0.19.9 install { code: 0, signal: null }
+43 silly ADD node_modules/node-gyp-build
+44 silly ADD node_modules/@qwen-code/audio-capture
+45 silly CHANGE node_modules/@qwen-code/qwen-code
+46 silly REMOVE node_modules/@qwen-code/qwen-code/node_modules/@qwen-code/audio-capture
+47 silly REMOVE node_modules/@qwen-code/qwen-code/node_modules/@qwen-code/audio-capture/node_modules/node-gyp-build
+48 warn allow-scripts 1 package has install scripts not yet covered by allowScripts:
+48 warn allow-scripts   @qwen-code/audio-capture@0.19.9 (install: node install.js)
+48 warn allow-scripts
+48 warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+49 verbose cwd /home/cuphana7/kobi-package/npm-seed
+50 verbose os Linux 6.6.137+
+51 verbose node v24.16.0
+52 verbose npm  v11.17.0
+53 verbose exit 0
+54 info ok

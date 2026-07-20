@@ -35,9 +35,12 @@
     "showSessionRecap": false
   },
   "ui": {
-    "hideBanner": true,
+    "hideBanner": false,
     "hideTips": true,
     "compactMode": false,
+    "customBannerTitle": "Kobi",
+    "customBannerSubtitle": "KB AI Assistant",
+    "customAsciiArt": " ▄▄   ▄▄  ▄▄▄▄▄▄  ▄▄▄▄▄▄  ▄▄\n██║ ██╔╝██╔═══██╗██╔══██╗██║\n█████╔╝ ██║   ██║██████╔╝██║\n██╔═██╗ ██║   ██║██╔══██╗██║\n██║  ██╗╚██████╔╝██████╔╝██║\n╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝",
     "customWittyPhrases": [
       "Kobi 가 생각하는 중입니다.",
       "Kobi 가 찾는 중입니다.",
@@ -51,7 +54,10 @@
     "enabled": false
   },
   "tools": {
-    "approvalMode": "default"
+    "approvalMode": "default",
+    "computerUse": {
+      "enabled": true
+    }
   },
   "permissions": {
     "ask": [
@@ -72,7 +78,30 @@
       "Bash(git push *)",
       "Bash(del *)",
       "Bash(rm *)",
-      "Bash(format *)"
+      "Bash(format *)",
+      "computer_use__click",
+      "computer_use__double_click",
+      "computer_use__right_click",
+      "computer_use__drag",
+      "computer_use__hotkey",
+      "computer_use__press_key",
+      "computer_use__type_text",
+      "computer_use__set_value",
+      "computer_use__scroll",
+      "computer_use__move_cursor",
+      "computer_use__launch_app",
+      "computer_use__kill_app",
+      "computer_use__page",
+      "computer_use__replay_trajectory",
+      "computer_use__start_recording",
+      "computer_use__stop_recording",
+      "computer_use__set_config",
+      "computer_use__set_agent_cursor_enabled",
+      "computer_use__set_agent_cursor_motion",
+      "computer_use__set_agent_cursor_style",
+      "computer_use__bring_to_front",
+      "computer_use__start_session",
+      "computer_use__end_session"
     ]
   },
   "context": {

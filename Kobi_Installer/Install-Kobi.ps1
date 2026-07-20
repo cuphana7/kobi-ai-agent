@@ -42,7 +42,7 @@ Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
 
 # 2. 사내 환경설정 파일 및 제니퍼 모니터링 스킬 배포
 Write-Host ""
-Write-Host "[2/3] 사용자 설정 및 모니터링 스킬 배포"
+Write-Host "[2/3] 사용자 설정, 모니터링 스킬 및 Computer Use 드라이버 배포"
 New-Item -ItemType Directory -Force -Path $UserQwenRoot | Out-Null
 
 $SourceQwenMd = Join-Path $InstallRoot "config\QWEN.md"
@@ -140,6 +140,44 @@ Always respond in Korean unless the user explicitly asks for another language.
     $OutputLangText,
     [System.Text.UTF8Encoding]::new($true)
 )
+
+# Computer Use(화면 읽기 전용) 드라이버 오프라인 배치
+# qwen-code에 내장된 Computer Use 툴은 cua-driver-rs 바이너리가
+# ~/.qwen/computer-use/cua-driver-rs-<버전>/cua-driver-rs-<버전>-windows-x86_64/cua-driver.exe
+# 경로에 있으면 온라인 다운로드를 시도하지 않고 그대로 사용하므로, 오프라인 패키지에
+# 미리 포함해 둔 자산을 해당 경로에 그대로 풀어준다. 마우스/키보드 조작 툴은
+# settings.json의 permissions.deny에서 차단되어 화면 읽기 용도로만 동작한다.
+$ComputerUseVersion    = "0.5.2"
+$ComputerUseAssetName  = "cua-driver-rs-$ComputerUseVersion-windows-x86_64"
+$ComputerUseRoot       = Join-Path $UserQwenRoot "computer-use"
+$ComputerUseVersionDir = Join-Path $ComputerUseRoot "cua-driver-rs-$ComputerUseVersion"
+$ComputerUseBin        = Join-Path $ComputerUseVersionDir "$ComputerUseAssetName\cua-driver.exe"
+$SourceComputerUseZip  = Join-Path $InstallerRoot "assets\computer-use\$ComputerUseAssetName.zip"
+$ExpectedComputerUseSha256 = "9c7d34c2a778b9791d3649ceebcc82f14a770901790c3a81c474fb20a5e446f4"
+
+if (Test-Path $SourceComputerUseZip) {
+    $ActualComputerUseSha256 = (Get-FileHash -Path $SourceComputerUseZip -Algorithm SHA256).Hash.ToLower()
+    if ($ActualComputerUseSha256 -ne $ExpectedComputerUseSha256) {
+        Write-Host "경고: Computer Use 드라이버 체크섬이 일치하지 않아 배치를 건너뜁니다(화면 읽기 기능 비활성)." -ForegroundColor Yellow
+    } else {
+        if (Test-Path $ComputerUseVersionDir) {
+            Remove-Item $ComputerUseVersionDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        New-Item -ItemType Directory -Force -Path $ComputerUseVersionDir | Out-Null
+        if (Test-Path $TarExe) {
+            & $TarExe -xf $SourceComputerUseZip -C $ComputerUseVersionDir
+        } else {
+            Expand-Archive -Path $SourceComputerUseZip -DestinationPath $ComputerUseVersionDir -Force
+        }
+        if (Test-Path $ComputerUseBin) {
+            Write-Host "Computer Use(화면 읽기 전용) 드라이버가 성공적으로 배치되었습니다."
+        } else {
+            Write-Host "경고: Computer Use 드라이버 배치 후 실행 파일을 찾을 수 없습니다." -ForegroundColor Yellow
+        }
+    }
+} else {
+    Write-Host "안내: Computer Use 드라이버 자산이 없어 배치를 건너뜁니다(화면 읽기 기능 비활성)." -ForegroundColor Yellow
+}
 
 # 3. 사용자 환경 변수 Path에 kobi 명령어 등록
 Write-Host ""

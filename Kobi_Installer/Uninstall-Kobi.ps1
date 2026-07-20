@@ -61,7 +61,11 @@ $SkillsDir = Join-Path $UserQwenRoot "skills"
 $JenniferMonitorSkill = Join-Path $SkillsDir "jennifer-monitor"
 $ProjectBootstrapSkill = Join-Path $SkillsDir "project-bootstrap"
 $FrismCmSkill = Join-Path $SkillsDir "frism-cm"
+$ComputerUseDir = Join-Path $UserQwenRoot "computer-use"
 
+if (Test-Path $ComputerUseDir) {
+    Remove-Item $ComputerUseDir -Recurse -Force -ErrorAction SilentlyContinue
+}
 if (Test-Path $QwenMd) {
     Remove-Item $QwenMd -Force -ErrorAction SilentlyContinue
 }
