@@ -127,6 +127,27 @@ if (Test-Path $SourceFrismCmSkill) {
     Write-Host "Frism CM 연동 스킬이 성공적으로 추가되었습니다."
 }
 
+# Office(Excel/Word) 편집 스킬 자동 설치 및 압축 해제
+$TargetOfficeEditSkillDir = Join-Path $SkillsDir "office-edit"
+
+if (Test-Path $TargetOfficeEditSkillDir) {
+    Remove-Item $TargetOfficeEditSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+}
+New-Item -ItemType Directory -Force -Path $TargetOfficeEditSkillDir | Out-Null
+
+$SourceOfficeEditSkill = Join-Path $InstallerRoot "assets\office-edit.skill"
+if (Test-Path $SourceOfficeEditSkill) {
+    $TempZip = Join-Path $env:TEMP "office_edit_temp.zip"
+    Copy-Item $SourceOfficeEditSkill $TempZip -Force
+    if (Test-Path $TarExe) {
+        & $TarExe -xf $TempZip -C $TargetOfficeEditSkillDir
+    } else {
+        Expand-Archive -Path $TempZip -DestinationPath $TargetOfficeEditSkillDir -Force
+    }
+    Remove-Item $TempZip -Force
+    Write-Host "Office(Excel/Word) 편집 스킬이 성공적으로 추가되었습니다."
+}
+
 # 한국어 출력 헬퍼 설정 파일 생성
 $OutputLangFile = Join-Path $UserQwenRoot "output-language.md"
 $OutputLangText = @"

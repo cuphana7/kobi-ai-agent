@@ -97,6 +97,13 @@ rm -f frism-cm.skill Kobi_Installer/assets/frism-cm.skill
 (cd frism-cm && zip -rq ../frism-cm.skill *)
 cp frism-cm.skill Kobi_Installer/assets/frism-cm.skill
 
+echo "----------------------------------------------------------"
+echo " Rebuilding office-edit.skill from office-edit/..."
+echo "----------------------------------------------------------"
+rm -f office-edit.skill Kobi_Installer/assets/office-edit.skill
+(cd office-edit && zip -rq ../office-edit.skill *)
+cp office-edit.skill Kobi_Installer/assets/office-edit.skill
+
 # 4. Kobi_Runtime 빌드 준비
 echo "----------------------------------------------------------"
 echo " Pre-building Kobi_Runtime for Windows..."
@@ -196,13 +203,40 @@ $ErrorActionPreference = "Stop"
 $MyDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $InstallRoot = Split-Path -Parent $MyDir
 
-$NodeExe     = Get-ChildItem -Path (Join-Path $InstallRoot "node") -Recurse -Filter "node.exe" | Select-Object -First 1
+# node.exe 탐색은 파일이 많아 시간이 걸릴 수 있으므로, 백그라운드에서 찾는 동안
+# 스피너 애니메이션을 표시해 "멈춘 것"처럼 보이지 않도록 한다.
+function Show-Spinner {
+    param(
+        [System.Management.Automation.Job]$Job,
+        [string]$Label
+    )
+    $SpinnerChars = @('|', '/', '-', '\')
+    $i = 0
+    while ($Job.State -eq 'Running') {
+        $Frame = $SpinnerChars[$i % $SpinnerChars.Length]
+        Write-Host -NoNewline ("`r{0} {1} " -f $Frame, $Label)
+        Start-Sleep -Milliseconds 120
+        $i++
+    }
+    # 스피너 라인 지우기
+    Write-Host -NoNewline ("`r" + (' ' * ($Label.Length + 4)) + "`r")
+}
 
-if (-not $NodeExe) {
+$NodeSearchJob = Start-Job -ScriptBlock {
+    param($NodeRoot)
+    Get-ChildItem -Path $NodeRoot -Recurse -Filter "node.exe" -ErrorAction SilentlyContinue |
+        Select-Object -First 1 -ExpandProperty FullName
+} -ArgumentList (Join-Path $InstallRoot "node")
+
+Show-Spinner -Job $NodeSearchJob -Label "Kobi 실행 준비 중입니다..."
+$NodeExePath = Receive-Job -Job $NodeSearchJob
+Remove-Job -Job $NodeSearchJob -Force
+
+if (-not $NodeExePath) {
     throw "node.exe 실행 파일을 찾을 수 없습니다."
 }
 
-$NodeDir    = Split-Path -Parent $NodeExe.FullName
+$NodeDir    = Split-Path -Parent $NodeExePath
 $QwenCliJs  = Join-Path $InstallRoot "qwen\node_modules\@qwen-code\qwen-code\cli-entry.js"
 $ConfigPath = Join-Path $InstallRoot "config\settings.json"
 
@@ -234,7 +268,9 @@ if ($args) {
     $QwenArgs += $args
 }
 
-& $NodeExe.FullName "$QwenCliJs" --append-system-prompt $AppendPrompt @QwenArgs
+Write-Host "Kobi 에이전트를 시작합니다..." -ForegroundColor DarkGray
+
+& $NodeExePath "$QwenCliJs" --append-system-prompt $AppendPrompt @QwenArgs
 exit $LASTEXITCODE
 EOF
 
@@ -257,6 +293,7 @@ mkdir -p "$DIST_DIR/Kobi_Installer/assets"
 cp Kobi_Installer/assets/jennifer-monitor.skill "$DIST_DIR/Kobi_Installer/assets/"
 cp Kobi_Installer/assets/project-bootstrap.skill "$DIST_DIR/Kobi_Installer/assets/"
 cp Kobi_Installer/assets/frism-cm.skill "$DIST_DIR/Kobi_Installer/assets/"
+cp Kobi_Installer/assets/office-edit.skill "$DIST_DIR/Kobi_Installer/assets/"
 
 # Computer Use(화면 읽기 전용) 드라이버 자산 복사
 mkdir -p "$DIST_DIR/Kobi_Installer/assets/computer-use"

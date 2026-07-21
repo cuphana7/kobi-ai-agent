@@ -1,0 +1,12 @@
+{
+  "name": "kobi-office-edit-skill",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Kobi 오피스(Excel/Word) 파일 읽기 / 부분 수정 / 템플릿 채우기 CLI 스킬",
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "mammoth": "^1.12.0",
+    "docxtemplater": "^3.69.0",
+    "pizzip": "^3.2.0"
+  }
+}

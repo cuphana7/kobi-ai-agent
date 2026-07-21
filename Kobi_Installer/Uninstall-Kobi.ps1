@@ -61,6 +61,7 @@ $SkillsDir = Join-Path $UserQwenRoot "skills"
 $JenniferMonitorSkill = Join-Path $SkillsDir "jennifer-monitor"
 $ProjectBootstrapSkill = Join-Path $SkillsDir "project-bootstrap"
 $FrismCmSkill = Join-Path $SkillsDir "frism-cm"
+$OfficeEditSkill = Join-Path $SkillsDir "office-edit"
 $ComputerUseDir = Join-Path $UserQwenRoot "computer-use"
 
 if (Test-Path $ComputerUseDir) {
@@ -80,6 +81,9 @@ if (Test-Path $ProjectBootstrapSkill) {
 }
 if (Test-Path $FrismCmSkill) {
     Remove-Item $FrismCmSkill -Recurse -Force -ErrorAction SilentlyContinue
+}
+if (Test-Path $OfficeEditSkill) {
+    Remove-Item $OfficeEditSkill -Recurse -Force -ErrorAction SilentlyContinue
 }
 
 # 비어있는 skills 폴더 삭제
