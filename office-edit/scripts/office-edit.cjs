@@ -2,7 +2,7 @@
 
 /**
  * Kobi office-edit skill CLI
- * Excel(.xlsx) / Word(.docx) 읽기, 부분 수정, 템플릿 채우기 통합 래퍼.
+ * Excel(.xlsx) / Word(.docx) 읽기, 부분 수정, 신규 생성, 템플릿 채우기 통합 래퍼.
  * SKILL_GUIDE.md 법칙 1에 따라 항상 단일 JSON 한 줄만 stdout에 출력한다.
  */
 
@@ -61,6 +61,32 @@ function resolveOutPath(opts, defaultSuffix) {
   const ext = path.extname(opts.file);
   const base = opts.file.slice(0, -ext.length || undefined);
   return `${base}${defaultSuffix}${ext}`;
+}
+
+// 안전 가드레일: create-* 명령은 신규 파일 생성이 목적이므로, --force 없이는 기존 파일을 덮어쓰지 않는다.
+function requireNewOutPath(opts, ext) {
+  const outPath = opts.out;
+  if (!outPath) fail('MISSING_ARGUMENT', '--out <저장경로> 인자가 필요합니다.', null);
+  if (path.extname(outPath).toLowerCase() !== ext) {
+    fail('INVALID_FORMAT', `--out 경로는 ${ext} 확장자여야 합니다.`, null);
+  }
+  if (fs.existsSync(outPath) && !opts.force) {
+    fail(
+      'FILE_EXISTS',
+      `이미 존재하는 파일입니다: ${outPath}`,
+      '기존 파일을 덮어쓰려면 --force를 추가하세요.'
+    );
+  }
+}
+
+function readJsonSpec(dataPath) {
+  if (!dataPath) fail('MISSING_ARGUMENT', '--data <json파일경로> 인자가 필요합니다.', null);
+  if (!fs.existsSync(dataPath)) fail('FILE_NOT_FOUND', `데이터 파일을 찾을 수 없습니다: ${dataPath}`, null);
+  try {
+    return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  } catch (e) {
+    return fail('JSON_PARSE_ERROR', '--data JSON 파일 파싱에 실패했습니다.', e.message);
+  }
 }
 
 function plainCellValue(v) {
@@ -235,6 +261,103 @@ async function cmdFillTemplate(opts) {
   ok({ file: opts.out }, '템플릿을 채워 새 파일을 생성했습니다.');
 }
 
+async function cmdCreateXlsx(opts) {
+  requireNewOutPath(opts, '.xlsx');
+  const spec = readJsonSpec(opts.data);
+
+  if (!Array.isArray(spec.sheets) || spec.sheets.length === 0) {
+    return fail(
+      'INVALID_SPEC',
+      'data.sheets 배열이 최소 1개 필요합니다.',
+      '예: {"sheets":[{"name":"Sheet1","rows":[["이름","점수"],["홍길동",90]]}]}'
+    );
+  }
+
+  const ExcelJS = require('exceljs');
+  const wb = new ExcelJS.Workbook();
+
+  for (const sheetSpec of spec.sheets) {
+    const sheet = wb.addWorksheet(sheetSpec.name || 'Sheet1');
+    if (Array.isArray(sheetSpec.columnWidths)) {
+      sheetSpec.columnWidths.forEach((w, i) => {
+        if (w) sheet.getColumn(i + 1).width = w;
+      });
+    }
+    const rows = Array.isArray(sheetSpec.rows) ? sheetSpec.rows : [];
+    rows.forEach((row) => sheet.addRow(row));
+    if (sheetSpec.boldHeaderRow && rows.length > 0) {
+      sheet.getRow(1).font = { bold: true };
+    }
+  }
+
+  await wb.xlsx.writeFile(opts.out);
+  ok({ file: opts.out, sheetCount: spec.sheets.length }, '새 Excel 파일을 생성했습니다.');
+}
+
+function buildDocxBlocks(blocks) {
+  const { Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType } = require('docx');
+  const headingLevels = {
+    1: HeadingLevel.HEADING_1,
+    2: HeadingLevel.HEADING_2,
+    3: HeadingLevel.HEADING_3,
+    4: HeadingLevel.HEADING_4,
+  };
+
+  return blocks.map((b) => {
+    if (b.type === 'heading') {
+      return new Paragraph({ text: String(b.text || ''), heading: headingLevels[b.level] || HeadingLevel.HEADING_1 });
+    }
+    if (b.type === 'table') {
+      const rows = Array.isArray(b.rows) ? b.rows : [];
+      return new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: rows.map(
+          (r) =>
+            new TableRow({
+              children: r.map(
+                (cellText) =>
+                  new TableCell({
+                    width: { size: 100 / (r.length || 1), type: WidthType.PERCENTAGE },
+                    children: [new Paragraph(String(cellText))],
+                  })
+              ),
+            })
+        ),
+      });
+    }
+    // 기본값: 일반 단락 (bold/italic 지정 가능)
+    return new Paragraph({
+      children: [new TextRun({ text: String(b.text || ''), bold: !!b.bold, italics: !!b.italic })],
+    });
+  });
+}
+
+async function cmdCreateDocx(opts) {
+  requireNewOutPath(opts, '.docx');
+  const spec = readJsonSpec(opts.data);
+
+  if (!spec.title && !Array.isArray(spec.blocks)) {
+    return fail(
+      'INVALID_SPEC',
+      'data.title 또는 data.blocks 중 최소 하나가 필요합니다.',
+      '예: {"title":"보고서","blocks":[{"type":"heading","level":1,"text":"1. 개요"},{"type":"paragraph","text":"본문 내용"},{"type":"table","rows":[["이름","점수"],["홍길동","90"]]}]}'
+    );
+  }
+
+  const { Document, Packer, Paragraph, HeadingLevel } = require('docx');
+  const children = [];
+  if (spec.title) {
+    children.push(new Paragraph({ text: String(spec.title), heading: HeadingLevel.TITLE }));
+  }
+  const blocks = Array.isArray(spec.blocks) ? spec.blocks : [];
+  children.push(...buildDocxBlocks(blocks));
+
+  const doc = new Document({ sections: [{ children }] });
+  const buf = await Packer.toBuffer(doc);
+  fs.writeFileSync(opts.out, buf);
+  ok({ file: opts.out, blockCount: blocks.length }, '새 Word 문서를 생성했습니다.');
+}
+
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
   const opts = parseArgs(rest);
@@ -251,18 +374,32 @@ async function main() {
         return await cmdEditDocx(opts);
       case 'fill-template':
         return await cmdFillTemplate(opts);
+      case 'create-xlsx':
+        return await cmdCreateXlsx(opts);
+      case 'create-docx':
+        return await cmdCreateDocx(opts);
       case undefined:
       case 'help':
       case '--help':
         return ok(
-          { commands: ['read-xlsx', 'edit-xlsx', 'read-docx', 'edit-docx', 'fill-template'] },
+          {
+            commands: [
+              'read-xlsx',
+              'edit-xlsx',
+              'read-docx',
+              'edit-docx',
+              'fill-template',
+              'create-xlsx',
+              'create-docx',
+            ],
+          },
           '사용법은 SKILL.md를 참고하세요.'
         );
       default:
         return fail(
           'UNKNOWN_COMMAND',
           `알 수 없는 명령입니다: ${cmd}`,
-          '사용 가능한 명령: read-xlsx, edit-xlsx, read-docx, edit-docx, fill-template'
+          '사용 가능한 명령: read-xlsx, edit-xlsx, read-docx, edit-docx, fill-template, create-xlsx, create-docx'
         );
     }
   } catch (e) {

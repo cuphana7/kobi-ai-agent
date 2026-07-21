@@ -143,19 +143,21 @@ kobi-package/
 
 ## 9. Office(Excel/Word) 파일 편집 스킬 (Office Edit Skill)
 
-본 배포 패키지에는 Office가 설치되어 있지 않은 PC에서도 순수 Node.js 라이브러리만으로 Excel(`.xlsx`)과 Word(`.docx`) 파일을 읽고, 부분 수정하고, 템플릿 기반으로 새로 생성할 수 있는 전용 스킬이 탑재되어 있습니다.
+본 배포 패키지에는 Office가 설치되어 있지 않은 PC에서도 순수 Node.js 라이브러리만으로 Excel(`.xlsx`)과 Word(`.docx`) 파일을 읽고, 부분 수정하고, 백지 상태에서 새로 만들고, 템플릿 기반으로 채워 생성할 수 있는 전용 스킬이 탑재되어 있습니다.
 
 - **스킬 파일**: `Kobi_Installer/assets/office-edit.skill`
 - **자동 탑재**:
   - 본 패키지는 설치 스크립트 실행 시 **자동으로 Office 편집 스킬의 압축을 해제하고 홈 프로필(`~/.qwen/skills/office-edit`)에 사전 연동**합니다.
-  - 필요한 라이브러리(exceljs, mammoth, docxtemplater, pizzip)가 스킬 폴더 내부에 이미 포함되어 있어(오프라인 자가수용형 구조) 별도 설치나 네트워크 연결이 필요 없습니다.
+  - 필요한 라이브러리(exceljs, mammoth, docxtemplater, pizzip, docx)가 스킬 폴더 내부에 이미 포함되어 있어(오프라인 자가수용형 구조) 별도 설치나 네트워크 연결이 필요 없습니다.
 - **핵심 탑재 기능**:
   - Excel 시트/셀 내용 조회 (`read-xlsx`)
   - Excel 특정 셀 값만 부분 수정, 기존 서식 유지 (`edit-xlsx`)
   - Word 문서 내용 텍스트/마크다운 추출 (`read-docx`)
   - Word 문서 내 특정 문구 치환, 기존 서식 유지 (`edit-docx`)
   - 보고서 등 템플릿에 데이터를 채워 새 Excel/Word 파일 생성 (`fill-template`)
-- **안전 원칙**: `--in-place`를 명시하지 않는 한 원본 파일을 덮어쓰지 않고 항상 새 파일로 저장합니다.
+  - 양식 없이 제목/표/문단 구조를 지정해 완전히 새로운 Excel 파일 생성 (`create-xlsx`)
+  - 양식 없이 제목/표/문단 구조를 지정해 완전히 새로운 Word 문서 생성 (`create-docx`)
+- **안전 원칙**: `--in-place`를 명시하지 않는 한 원본 파일을 덮어쓰지 않고 항상 새 파일로 저장하며, `create-xlsx`/`create-docx`는 `--force` 없이는 기존 파일을 덮어쓰지 않습니다.
 
 ---
 
@@ -194,7 +196,8 @@ KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본
 
 | 버전 | 변경 일자 | 변경 구분 | 상세 변경 내용 | 작업자 |
 | :--- | :--- | :--- | :--- | :--- |
-| **v20260721** | 2026-07-21 | 기능 추가 | - **Office(Excel/Word) 파일 편집 스킬(`office-edit`) 추가**<br>- Excel 시트/셀 조회(`read-xlsx`) 및 서식 유지 부분 수정(`edit-xlsx`) 지원<br>- Word 문서 텍스트 추출(`read-docx`) 및 서식 유지 문구 치환(`edit-docx`) 지원<br>- 템플릿에 데이터를 채워 신규 Excel/Word 파일 생성(`fill-template`) 지원<br>- exceljs/mammoth/docxtemplater/pizzip 라이브러리를 스킬 내부에 오프라인 자가수용형으로 번들<br>- `--in-place` 미지정 시 원본 미덮어쓰기 안전 원칙 적용<br>- Install/Uninstall 파워셸 스크립트에 자동 압축해제 및 정리 로직 추가 | Claude Sonnet 5 / 개발지원팀 |
+| **v20260721** | 2026-07-21 | 기능 추가 / 개선 | - **Office(Excel/Word) 파일 편집 스킬(`office-edit`) 추가**<br>- Excel 시트/셀 조회(`read-xlsx`) 및 서식 유지 부분 수정(`edit-xlsx`) 지원<br>- Word 문서 텍스트 추출(`read-docx`) 및 서식 유지 문구 치환(`edit-docx`) 지원<br>- 템플릿에 데이터를 채워 신규 Excel/Word 파일 생성(`fill-template`) 지원<br>- 양식 없이 제목/표/문단 구조를 지정해 완전히 새로운 Excel/Word 파일 생성(`create-xlsx`, `create-docx`) 지원<br>- exceljs/mammoth/docxtemplater/pizzip/docx 라이브러리를 스킬 내부에 오프라인 자가수용형으로 번들<br>- `--in-place` 미지정 시 원본 미덮어쓰기, `create-xlsx`/`create-docx`는 `--force` 없이는 기존 파일 미덮어쓰기 안전 원칙 적용<br>- Install/Uninstall 파워셸 스크립트에 자동 압축해제 및 정리 로직 추가<br>- Qwen Code 코어 모듈 0.19.9 → **0.20.0** 업데이트 및 오프라인 캐시 갱신<br>- 실행 스크립트 시작 안내 개선 — `node.exe` 탐색 중 스피너 애니메이션(`Kobi 실행 준비 중입니다...`) 표시, 실행 직전 `Kobi 에이전트를 시작합니다...` 안내 메시지 추가<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | Claude Sonnet 5 / 개발지원팀 |
+| **v20260720** | 2026-07-20 | 기능 추가 / UI 개선 | - **시작 배너 활성화 및 Kobi 브랜딩 적용** (`hideBanner: false`로 전환, `customBannerTitle: "Kobi"`, `customBannerSubtitle: "KB AI Assistant"`, Kobi 아스키 아트 로고 추가 — 실행 시 상단에 노출)<br>- Computer Use 기능 활성화(`tools.computerUse.enabled: true`) 및 관련 조회 툴 권한 목록(`permissions.ask`) 세분화 반영<br>- Qwen Code 코어 모듈 0.19.9 번들 및 오프라인 캐시 갱신 | Claude Sonnet 5 / 개발지원팀 |
 | **v20260713** | 2026-07-13 | 기능 추가 (보안팀 승인) | - **Computer Use 화면 읽기 전용 기능 추가** (`cua-driver-rs` 0.5.2 오프라인 번들)<br>- 마우스/키보드 조작 툴 전체 차단, 읽기 전용 조회 툴만 허용(`permissions.deny`)<br>- 비전 미지원 사내 LLM 대응을 위해 `get_window_state(mode:"ax")` 텍스트 UI 트리 읽기 방식 채택 및 `QWEN.md` 지침 반영<br>- Install/Uninstall 스크립트에 드라이버 체크섬 검증 배치/정리 로직 추가<br>- 내부망 전용 단일 사용자 PC 전제 하에 개인 알림/메시지 인용 정책 완화(자격증명 정보는 계속 인용 금지)로 `QWEN.md` 세분화<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | 개발지원팀 |
 | **v20260709_1200** | 2026-07-09 | 기능 추가 | - **Frism 형상관리시스템(CM) 연동 스킬 추가**<br>- 자바 기반 CLI 프로그램 및 Node.js 래퍼 구현 및 연동<br>- 체크아웃/체크인, 버전이력조회, CM패키지 조회/생성, 다운로드, 배포 명령 통합 지원<br>- Install 및 Uninstall 파워셸 스크립트에 자동 압축해제 및 데이터 정리 프로세스 추가<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | Gemini CLI / 개발지원팀 |
 | **v20260702_0205** | 2026-07-02 | 성능/사용성 개선 | - **무설치 포터블 패키지 구조 전면 도입** (NPM 및 압축해제 과정 생략)<br>- 배포 패키지 빌드 자동화 스크립트(`make.sh`)에 Windows x64 타겟팅 크로스 빌드(Cross-build) 체인 내장<br>- 사용자 PC 설치 과정을 3단계로 초경량 간소화하여 연동 안정성 극대화<br>- 제니퍼 모니터링 스킬 자동 무설치 압축해제 설치 적용<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | Gemini CLI / 개발지원팀 |
