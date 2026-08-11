@@ -47,25 +47,60 @@ kobi-package/
         └── bin/                # 실행 커맨드(kobi.cmd, kobi.ps1) 래퍼 폴더
 ```
 
+> **Linux 배포판**은 별도의 `Kobi_Installer_linux_v[버전].tar.gz`로 산출되며, 위 구조에서 다음이 달라집니다.
+> - 설치/삭제 스크립트가 `install.sh` / `uninstall.sh` (bash)로 대체
+> - `Kobi_Runtime/node/`가 리눅스 포터블 Node.js, `Kobi_Runtime/bin/`에 bash 런처 `kobi` 포함
+> - `assets/computer-use/` 드라이버 미포함(리눅스 미지원)
+
 ---
 
 ## 3. 설치 전 요구사항
 
+### Windows
 - **운영체제**: Windows 10 / 11 (64-bit)
 - **실행 권한**: 일반 사용자 권한으로 설치 가능 (시스템 전역 설정을 건드리지 않고 환경 변수 및 홈 경로 설정만 변경하므로 관리자 권한이 불필요합니다)
 - **PowerShell 설정**: PowerShell v5.1 이상 지원 (Windows 기본 탑재)
+
+### Linux
+- **운영체제**: x86_64(64-bit) glibc 기반 배포판 (예: Ubuntu, RHEL/Rocky, Debian 등). ※ Alpine 등 musl 기반 배포판은 미지원입니다.
+- **실행 권한**: 일반 사용자 권한으로 설치 가능 (홈 디렉터리 `~/.qwen`, `~/.local/bin` 및 셸 설정 파일만 변경하므로 root 권한이 불필요합니다)
+- **필수 도구**: `bash`, `tar`, `unzip`(또는 `bsdtar`), `curl` (대부분의 배포판 기본 탑재)
+- **참고**: Linux 배포판에서는 Computer Use(화면 읽기) 기능이 제공되지 않습니다(8장 참고).
 
 ---
 
 ## 4. 설치 가이드 (Installation)
 
+### Windows
+
 1. 배포받은 **`Kobi_Installer_v[버전].zip`** (예: `Kobi_Installer_v20260702_0205.zip`) 파일의 압축을 로컬 드라이브(예: `C:\Temp` 또는 `D:\Download` 등 **원하는 보존 위치**)에 해제합니다.
 2. 압축이 해제된 폴더 내부로 이동하여 **`Install-Kobi.cmd`** 파일을 마우스 더블클릭으로 실행합니다.
-3. 자동으로 PowerShell 창이 열리며 다음과 같이 총 3단계의 무설치 연동 작업이 실행됩니다.
-   - **[1/3] 기존 실행 중인 Kobi 프로세스 종료 및 정리**
-   - **[2/3] 사용자 설정, 모니터링 스킬 및 Computer Use 드라이버 배포** (`~/.qwen/` 폴더에 QWEN.md, 스킬, Computer Use 드라이버 연동)
-   - **[3/3] 사용자 환경 변수 `Path`에 kobi 실행 경로 등록** (압축 해제된 폴더 내 `Kobi_Runtime\bin` 경로 등록)
+3. 자동으로 PowerShell 창이 열리며 다음과 같이 총 5단계의 무설치 연동 작업이 실행됩니다.
+   - **[1/5] 기존 실행 중인 Kobi 프로세스 종료 및 정리**
+   - **[2/5] 사용자 설정, 모니터링 스킬 및 Computer Use 드라이버 배포** (`~/.qwen/` 폴더에 QWEN.md, 스킬, Computer Use 드라이버 연동)
+   - **[3/5] Kobi Desktop용 사용자 설정 구성** (`~/.qwen/settings.json`에 사내 vLLM 연결 정보 병합; GUI가 읽는 표준 설정)
+   - **[4/5] Kobi Desktop(GUI) 설치** (설치물이 패키지에 있을 때만 무인 설치, 없으면 CLI 전용으로 건너뜀)
+   - **[5/5] 사용자 환경 변수 `Path`에 kobi 실행 경로 등록** (압축 해제된 폴더 내 `Kobi_Runtime\bin` 경로 등록)
 4. 최종 구동 상태와 버전 검증 결과가 성공적으로 출력되고 아무 키나 누르면 설치 창이 닫힙니다.
+
+### Linux
+
+1. 배포받은 **`Kobi_Installer_linux_v[버전].tar.gz`** 파일을 원하는 보존 위치(예: `~/tools`)에 해제합니다.
+   ```bash
+   mkdir -p ~/tools && tar -xzf Kobi_Installer_linux_v[버전].tar.gz -C ~/tools
+   cd ~/tools/Kobi_Installer_linux
+   ```
+2. 설치 스크립트를 실행합니다.
+   ```bash
+   ./install.sh
+   ```
+   총 3단계로 다음 작업이 자동 수행됩니다.
+   - **[1/3] 기존 실행 중인 Kobi 관련 프로세스 종료 및 정리**
+   - **[2/3] 사용자 설정 및 스킬 배포** (`~/.qwen/`에 QWEN.md 및 스킬 연동. Computer Use 드라이버는 리눅스 미제공)
+   - **[3/3] kobi 실행 경로 등록** (`~/.local/bin/kobi` 심볼릭 링크 생성 및 필요 시 `~/.profile`·`~/.bashrc`에 PATH 반영)
+3. 버전 검증 결과가 출력되면 설치가 완료됩니다. **새 터미널을 열거나 `source ~/.profile`** 로 PATH를 반영한 뒤 `kobi`를 사용합니다.
+
+> ⚠️ 본 패키지는 허가된 사용자만 설치할 수 있도록 `install.sh` 상단의 `ALLOWED_USERS` 계정 목록으로 설치를 제한합니다. 리눅스 로그인 계정 기준이므로, 배포 관리자는 배포 전 실제 허용 계정으로 목록을 갱신해야 합니다.
 
 ---
 
@@ -89,6 +124,18 @@ kobi-package/
   ```powershell
   kobi -p (Get-Clipboard)
   ```
+
+### Kobi Desktop (GUI) — 선택 사항
+CLI(`kobi`)에 더해, 터미널이 익숙하지 않은 사용자를 위한 **그래픽 데스크톱 앱(Kobi Desktop)**을 함께 배포할 수 있습니다.
+
+- **동시 설치**: 배포 패키지에 Desktop 설치물(`assets/desktop/Kobi-Desktop-x64.exe`)이 포함되어 있으면, `Install-Kobi.cmd` 실행 시 CLI와 함께 **무인 설치**됩니다(per-user 설치라 관리자 권한 불필요). 설치 후 **시작 메뉴에서 "Kobi"**를 실행하면 됩니다.
+- **사내 vLLM 사전 연결**: 설치기가 `~/.qwen/settings.json`에 사내 vLLM 연결 정보를 구성하므로, Desktop 최초 실행부터 바로 사내 모델로 대화할 수 있습니다. CLI와 동일한 스킬/지침(`~/.qwen/skills`, `QWEN.md`)도 그대로 공유됩니다.
+- **포터블 git 자동 포함**: qwen-code 런타임(CLI·Desktop 공용)은 `git`에 의존하며, git이 없는 PC에서는 특히 Desktop 실행이 실패합니다. 이를 위해 패키지에 **MinGit**(Git for Windows 최소 번들판)을 함께 넣어 `Kobi_Runtime\git`으로 추출하고 설치 시 `git\cmd`를 PATH에 등록합니다. 별도 git 설치가 필요 없습니다. (빌드 시 `Kobi_Installer/assets/`에 `MinGit-*-64-bit.zip`을 넣어두어야 포함됩니다.)
+- **CLI 전용 배포**: Desktop 설치물이 패키지에 없으면 기존과 동일하게 **CLI 전용**으로 설치됩니다(경고 없이 건너뜀).
+- **자동 업데이트**: 폐쇄망 환경이므로 앱 자체 자동 업데이트는 동작하지 않습니다(정상).
+- **API 키 주의**: 사내 vLLM에 키 인증이 켜지면, CLI는 실행 시 자동으로 키를 저장하지만 **Desktop은 별도로** GUI 설정 또는 `~/.qwen/settings.json`에 키를 반영해야 할 수 있습니다.
+
+> Desktop 설치물은 별도 빌드 산출물입니다. "Kobi"로 리브랜딩한 설치물을 만드는 방법은 [`desktop-brand/README.md`](desktop-brand/README.md)를 참고하세요(인터넷 되는 빌드 PC에서 `desktop-brand/build-desktop.sh` 실행 → `assets/desktop/`에 산출 → `make.sh windows`로 패키징).
 
 ---
 
@@ -130,6 +177,8 @@ kobi-package/
 ## 8. Computer Use 화면 읽기 기능 (Read-only Screen Awareness)
 
 본 배포 패키지는 Qwen Code에 내장된 Computer Use 기능을 **화면 읽기 전용**으로 제한하여 탑재합니다. 개발자가 열어둔 로그/에러창/실행결과 등 화면에 보이는 정보를 AI가 텍스트로 읽어 분석을 보조하는 용도이며, 마우스/키보드로 PC를 직접 조작하는 기능이 아닙니다.
+
+> ℹ️ **본 기능은 Windows 배포판에서만 제공됩니다.** 리눅스 배포판에는 cua-driver 바이너리가 포함되지 않으며, 리눅스용 `settings.json`에서 `tools.computerUse.enabled`가 `false`로 설정되어 기능이 비활성화됩니다.
 
 - **드라이버 자산**: `Kobi_Installer/assets/computer-use/cua-driver-rs-0.5.2-windows-x86_64.zip`
 - **자동 배치**: 설치 스크립트 실행 시 SHA-256 체크섬을 검증한 뒤 홈 프로필(`~/.qwen/computer-use/`)에 압축을 해제합니다. 드라이버가 이미 해당 경로에 존재하면 Qwen Code는 외부망으로 추가 다운로드를 시도하지 않습니다.
@@ -196,6 +245,8 @@ KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본
 
 | 버전 | 변경 일자 | 변경 구분 | 상세 변경 내용 | 작업자 |
 | :--- | :--- | :--- | :--- | :--- |
+| **v20260811** | 2026-08-11 | 기능 추가 (GUI 확장) | - **Kobi Desktop(GUI) 오프라인 번들 통합 (Windows)** — CLI(`kobi`)에 더해 그래픽 데스크톱 앱을 함께 배포<br>- 공식 Qwen Code Desktop(Electron, Apache-2.0)을 **"Kobi"로 리브랜딩**하는 빌드 도구 신설(`desktop-brand/build-desktop.sh` + `electron-builder`/`branding.ts`/아이콘 오버라이드) — 내장 CLI 런타임은 `QWEN_CODE_TARBALL`로 CLI와 동일한 qwen-code 0.21.0 tarball vendoring<br>- `make.sh`: Desktop 설치물(`Kobi-Desktop-*.exe`) 있을 때만 배포 zip에 포함, 포터블 **MinGit**(`MinGit-*-64-bit.zip`)을 `Kobi_Runtime\git`으로 추출(qwen-code 런타임의 git 의존성 대응 — git 없는 PC에서 Desktop 실행 실패 방지)<br>- `Install-Kobi.ps1`: 설치 5단계로 확장 — Desktop이 읽는 `~/.qwen/settings.json`에 사내 vLLM 연결 정보 병합(`ui.*` 제외, 기존 키 보존), Desktop 무인 설치(`/S`, per-user, 관리자 불필요), 번들 `git\cmd`를 User PATH에 등록(Desktop·CLI 공용)<br>- `Uninstall-Kobi.ps1`: HKCU/HKLM 레지스트리 기반 Desktop 무인 제거 및 git/settings 정리 추가<br>- README에 Desktop 사용 가이드 및 리브랜딩 빌드 절차 추가<br>- ⚠️ 선행 검증 필요: GUI가 커스텀 OpenAI 호환(사내 vLLM) 공급자를 존중하는지 인터넷 PC에서 확인 후 배포 | Claude Opus 4.8 / 개발지원팀 |
+| **v20260728** | 2026-07-28 | 기능 추가 (플랫폼 확장) | - **Linux(x86_64 glibc) 오프라인 설치 지원 추가**<br>- `make.sh`에 타겟 인자 도입(`./make.sh linux`) — 리눅스용 `Kobi_Installer_linux_v[버전].tar.gz` 별도 산출, 기존 `./make.sh` Windows 빌드는 그대로 유지<br>- 리눅스 포터블 Node.js(`node-v22.16.0-linux-x64`) 자산 추가 및 `npm install --os=linux` 오프라인 설치 적용(node-pty/clipboard/audio-capture 리눅스 네이티브 모듈 캐시 활용)<br>- bash 실행 런처(`Kobi_Runtime/bin/kobi`) 및 `install.sh`/`uninstall.sh` 신규 작성(프로세스 정리, 스킬 압축해제, `~/.local/bin` 심링크 및 셸 rc PATH 등록/정리, API 키 사전 점검 이식)<br>- 리눅스 `settings.json` 자동 패치 — Computer Use 비활성(`computerUse.enabled=false`) 및 리눅스 파괴 명령(`rmdir`/`dd`/`mkfs`/`shred`/`truncate`) deny 추가<br>- office-edit/jennifer-monitor/kbpay-service-check 등 순수 JS 스킬 리눅스 동작 확인(frism-cm·project-bootstrap의 Windows 전용 런처 스크립트는 후속 포팅 예정)<br>- README에 리눅스 설치 가이드 추가 | Claude Opus 4.8 / 개발지원팀 |
 | **v20260721** | 2026-07-21 | 기능 추가 / 개선 | - **Office(Excel/Word) 파일 편집 스킬(`office-edit`) 추가**<br>- Excel 시트/셀 조회(`read-xlsx`) 및 서식 유지 부분 수정(`edit-xlsx`) 지원<br>- Word 문서 텍스트 추출(`read-docx`) 및 서식 유지 문구 치환(`edit-docx`) 지원<br>- 템플릿에 데이터를 채워 신규 Excel/Word 파일 생성(`fill-template`) 지원<br>- 양식 없이 제목/표/문단 구조를 지정해 완전히 새로운 Excel/Word 파일 생성(`create-xlsx`, `create-docx`) 지원<br>- exceljs/mammoth/docxtemplater/pizzip/docx 라이브러리를 스킬 내부에 오프라인 자가수용형으로 번들<br>- `--in-place` 미지정 시 원본 미덮어쓰기, `create-xlsx`/`create-docx`는 `--force` 없이는 기존 파일 미덮어쓰기 안전 원칙 적용<br>- Install/Uninstall 파워셸 스크립트에 자동 압축해제 및 정리 로직 추가<br>- Qwen Code 코어 모듈 0.19.9 → **0.20.0** 업데이트 및 오프라인 캐시 갱신<br>- 실행 스크립트 시작 안내 개선 — `node.exe` 탐색 중 스피너 애니메이션(`Kobi 실행 준비 중입니다...`) 표시, 실행 직전 `Kobi 에이전트를 시작합니다...` 안내 메시지 추가<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | Claude Sonnet 5 / 개발지원팀 |
 | **v20260720** | 2026-07-20 | 기능 추가 / UI 개선 | - **시작 배너 활성화 및 Kobi 브랜딩 적용** (`hideBanner: false`로 전환, `customBannerTitle: "Kobi"`, `customBannerSubtitle: "KB AI Assistant"`, Kobi 아스키 아트 로고 추가 — 실행 시 상단에 노출)<br>- Computer Use 기능 활성화(`tools.computerUse.enabled: true`) 및 관련 조회 툴 권한 목록(`permissions.ask`) 세분화 반영<br>- Qwen Code 코어 모듈 0.19.9 번들 및 오프라인 캐시 갱신 | Claude Sonnet 5 / 개발지원팀 |
 | **v20260713** | 2026-07-13 | 기능 추가 (보안팀 승인) | - **Computer Use 화면 읽기 전용 기능 추가** (`cua-driver-rs` 0.5.2 오프라인 번들)<br>- 마우스/키보드 조작 툴 전체 차단, 읽기 전용 조회 툴만 허용(`permissions.deny`)<br>- 비전 미지원 사내 LLM 대응을 위해 `get_window_state(mode:"ax")` 텍스트 UI 트리 읽기 방식 채택 및 `QWEN.md` 지침 반영<br>- Install/Uninstall 스크립트에 드라이버 체크섬 검증 배치/정리 로직 추가<br>- 내부망 전용 단일 사용자 PC 전제 하에 개인 알림/메시지 인용 정책 완화(자격증명 정보는 계속 인용 금지)로 `QWEN.md` 세분화<br>- 배포 패키지 리빌드 및 SHA-256 해시 갱신 | 개발지원팀 |

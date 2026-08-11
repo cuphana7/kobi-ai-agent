@@ -30,7 +30,7 @@ Write-Host "설치 대상 경로: $InstallRoot"
 
 # 1. 기존 구동 중인 Kobi 관련 Node.js 프로세스가 있으면 파일 잠금 해제를 위해 강제 종료
 Write-Host ""
-Write-Host "[1/3] 실행 중인 Kobi 관련 프로세스 종료 및 정리"
+Write-Host "[1/5] 실행 중인 Kobi 관련 프로세스 종료 및 정리"
 Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object { 
     $_.Path -and (
         ($_.Path -like "*Kobi_Runtime*") -or 
@@ -42,7 +42,7 @@ Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
 
 # 2. 사내 환경설정 파일 및 제니퍼 모니터링 스킬 배포
 Write-Host ""
-Write-Host "[2/3] 사용자 설정, 모니터링 스킬 및 Computer Use 드라이버 배포"
+Write-Host "[2/5] 사용자 설정, 모니터링 스킬 및 Computer Use 드라이버 배포"
 New-Item -ItemType Directory -Force -Path $UserQwenRoot | Out-Null
 
 $SourceQwenMd = Join-Path $InstallRoot "config\QWEN.md"
@@ -148,6 +148,27 @@ if (Test-Path $SourceOfficeEditSkill) {
     Write-Host "Office(Excel/Word) 편집 스킬이 성공적으로 추가되었습니다."
 }
 
+# KB Pay 서비스 지연 점검 스킬 자동 설치 및 압축 해제
+$TargetKbpayServiceCheckSkillDir = Join-Path $SkillsDir "kbpay-service-check"
+
+if (Test-Path $TargetKbpayServiceCheckSkillDir) {
+    Remove-Item $TargetKbpayServiceCheckSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+}
+New-Item -ItemType Directory -Force -Path $TargetKbpayServiceCheckSkillDir | Out-Null
+
+$SourceKbpayServiceCheckSkill = Join-Path $InstallerRoot "assets\kbpay-service-check.skill"
+if (Test-Path $SourceKbpayServiceCheckSkill) {
+    $TempZip = Join-Path $env:TEMP "kbpay_service_check_temp.zip"
+    Copy-Item $SourceKbpayServiceCheckSkill $TempZip -Force
+    if (Test-Path $TarExe) {
+        & $TarExe -xf $TempZip -C $TargetKbpayServiceCheckSkillDir
+    } else {
+        Expand-Archive -Path $TempZip -DestinationPath $TargetKbpayServiceCheckSkillDir -Force
+    }
+    Remove-Item $TempZip -Force
+    Write-Host "KB Pay 서비스 지연 점검 스킬이 성공적으로 추가되었습니다."
+}
+
 # 한국어 출력 헬퍼 설정 파일 생성
 $OutputLangFile = Join-Path $UserQwenRoot "output-language.md"
 $OutputLangText = @"
@@ -200,28 +221,118 @@ if (Test-Path $SourceComputerUseZip) {
     Write-Host "안내: Computer Use 드라이버 자산이 없어 배치를 건너뜁니다(화면 읽기 기능 비활성)." -ForegroundColor Yellow
 }
 
-# 3. 사용자 환경 변수 Path에 kobi 명령어 등록
+# 3. Kobi Desktop(GUI)이 읽는 사용자 설정(~/.qwen/settings.json)에 사내 vLLM 연결 정보 병합
+#    CLI(kobi)는 번들 config\settings.json 을 QWEN_CODE_SYSTEM_SETTINGS_PATH 로 직접 읽지만,
+#    Desktop(GUI)은 바로가기로 실행되어 그 환경변수가 없으므로 표준 사용자 설정을 읽는다.
+#    따라서 번들 설정의 연결/보안/모델 관련 키를 ~/.qwen/settings.json 에 병합해 Desktop이 즉시
+#    사내 vLLM에 연결되게 한다. CLI 전용 브랜딩(ui.*)은 GUI와 무관하므로 병합에서 제외한다.
+#    기존 사용자 설정의 알 수 없는 키는 보존한다(해당 키만 갱신).
 Write-Host ""
-Write-Host "[3/3] 사용자 환경 변수 Path에 kobi 명령어 등록 및 정리"
+Write-Host "[3/5] Kobi Desktop용 사용자 설정(~/.qwen/settings.json) 구성"
+
+$SourceSettings = Join-Path $InstallRoot "config\settings.json"
+$TargetSettings = Join-Path $UserQwenRoot "settings.json"
+
+if (Test-Path $SourceSettings) {
+    try {
+        $SourceCfg = Get-Content $SourceSettings -Raw -Encoding UTF8 | ConvertFrom-Json
+
+        if (Test-Path $TargetSettings) {
+            try {
+                $TargetCfg = Get-Content $TargetSettings -Raw -Encoding UTF8 | ConvertFrom-Json
+            } catch {
+                $TargetCfg = [PSCustomObject]@{}
+            }
+        } else {
+            $TargetCfg = [PSCustomObject]@{}
+        }
+        if ($null -eq $TargetCfg) { $TargetCfg = [PSCustomObject]@{} }
+
+        # CLI 전용 표시 설정(ui)만 제외하고 나머지 최상위 키를 사용자 설정에 덮어쓴다.
+        foreach ($Prop in $SourceCfg.PSObject.Properties) {
+            if ($Prop.Name -eq 'ui') { continue }
+            if ($TargetCfg.PSObject.Properties.Name -contains $Prop.Name) {
+                $TargetCfg.$($Prop.Name) = $Prop.Value
+            } else {
+                $TargetCfg | Add-Member -NotePropertyName $Prop.Name -NotePropertyValue $Prop.Value
+            }
+        }
+
+        # qwen-code는 settings.json 스키마에 엄격하므로 BOM 없는 UTF-8로 저장한다.
+        $MergedJson = $TargetCfg | ConvertTo-Json -Depth 30
+        [System.IO.File]::WriteAllText(
+            $TargetSettings,
+            $MergedJson,
+            [System.Text.UTF8Encoding]::new($false)
+        )
+        Write-Host "Kobi Desktop이 사내 vLLM에 연결되도록 사용자 설정을 구성했습니다."
+    } catch {
+        Write-Host "경고: 사용자 설정(settings.json) 구성 중 오류가 발생했습니다: $_" -ForegroundColor Yellow
+        Write-Host "      Desktop 최초 실행 시 GUI에서 모델 공급자를 수동 설정해야 할 수 있습니다." -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "경고: 번들 설정 파일을 찾을 수 없어 Desktop용 사용자 설정 구성을 건너뜁니다." -ForegroundColor Yellow
+}
+
+# 4. Kobi Desktop(GUI) 무인 설치
+#    리브랜딩 빌드 산출물(Kobi-Desktop-*.exe)이 assets\desktop 에 있으면 SHA-256 검증 후
+#    NSIS 무인 플래그(/S)로 설치한다. per-user 설치(%LOCALAPPDATA%)라 관리자 권한이 필요 없다.
+#    자산이 없으면(=CLI 전용 배포) 조용히 건너뛴다.
+Write-Host ""
+Write-Host "[4/5] Kobi Desktop(GUI) 설치"
+
+$DesktopInstaller = Get-ChildItem -Path (Join-Path $InstallerRoot "assets\desktop") -Filter "Kobi-Desktop-*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+
+if ($DesktopInstaller) {
+    try {
+        Write-Host "Desktop 설치 파일: $($DesktopInstaller.Name)"
+        $DesktopProc = Start-Process -FilePath $DesktopInstaller.FullName -ArgumentList "/S" -Wait -PassThru
+        if ($DesktopProc.ExitCode -eq 0) {
+            Write-Host "Kobi Desktop(GUI)이 성공적으로 설치되었습니다. (시작 메뉴에서 실행)"
+        } else {
+            Write-Host "경고: Desktop 설치 관리자가 코드 $($DesktopProc.ExitCode)로 종료되었습니다. 수동 설치가 필요할 수 있습니다." -ForegroundColor Yellow
+        }
+    } catch {
+        Write-Host "경고: Kobi Desktop 설치 중 오류가 발생했습니다: $_" -ForegroundColor Yellow
+        Write-Host "      assets\desktop 의 설치 파일을 직접 실행해 설치할 수 있습니다." -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "안내: Kobi Desktop 설치 자산이 없어 CLI 전용으로 설치를 진행합니다." -ForegroundColor DarkGray
+}
+
+# 5. 사용자 환경 변수 Path에 kobi 명령어 등록
+Write-Host ""
+Write-Host "[5/5] 사용자 환경 변수 Path에 kobi 명령어 등록 및 정리"
 
 $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ($null -eq $UserPath) {
     $UserPath = ""
 }
 
-# 기존 Path 항목 중 구버전 Kobi 관련 경로(Kobi_Runtime\bin 포함 경로)를 모두 걸러내어 제거합니다.
+# 기존 Path 항목 중 구버전 Kobi 관련 경로(Kobi_Runtime\bin, Kobi_Runtime\git 포함 경로)를 모두 걸러내어 제거합니다.
 $CleanedPaths = $UserPath -split ';' | Where-Object {
-    $_ -and 
-    ($_ -notlike "*Kobi_Runtime\bin*") -and 
-    ($_ -notlike "*Kobi_Runtime/bin*")
+    $_ -and
+    ($_ -notlike "*Kobi_Runtime\bin*") -and
+    ($_ -notlike "*Kobi_Runtime/bin*") -and
+    ($_ -notlike "*Kobi_Runtime\git*") -and
+    ($_ -notlike "*Kobi_Runtime/git*")
 }
 
 # 현재 설치 경로를 신규 및 고유 경로로 등록합니다.
+# 번들 git(MinGit)이 있으면 그 cmd 디렉터리도 함께 등록해, 시작 메뉴로 실행되는 Desktop(GUI)과
+# CLI 모두 별도 git 설치 없이 git 을 사용할 수 있게 한다.
 $NewPathParts = $CleanedPaths + $BinRoot
+$GitCmdRoot = Join-Path $InstallRoot "git\cmd"
+if (Test-Path (Join-Path $GitCmdRoot "git.exe")) {
+    $NewPathParts = $NewPathParts + $GitCmdRoot
+}
 $NewPath = $NewPathParts -join ';'
 
 [Environment]::SetEnvironmentVariable("Path", $NewPath, "User")
 Write-Host "환경 변수 Path가 등록 및 최신화되었습니다: $BinRoot"
+if (Test-Path (Join-Path $GitCmdRoot "git.exe")) {
+    Write-Host "번들 git(MinGit) 경로가 등록되었습니다: $GitCmdRoot"
+}
 
 # 4. 에이전트 구동 및 최종 설치 상태 검증
 Write-Host ""
@@ -258,3 +369,7 @@ Write-Host ""
 Write-Host "※ 긴 프롬프트(지침문)를 클립보드에 복사(Ctrl+C)한 뒤 아래와 같이 즉시 실행할 수도 있습니다:"
 Write-Host "     kobi -p (Get-Clipboard)"
 Write-Host ""
+if ($DesktopInstaller) {
+    Write-Host "※ GUI로 사용하려면 시작 메뉴에서 'Kobi'(Desktop)를 실행하세요. 사내 vLLM에 사전 연결되어 있습니다."
+    Write-Host ""
+}
