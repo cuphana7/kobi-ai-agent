@@ -2,6 +2,8 @@
 cd ~/kobi-package
 
 # 1. Qwen Code 모듈 최신버전 확인 및 업데이트 검사
+# (skills 서브타깃은 스킬만 묶으므로 qwen 레지스트리 점검이 불필요 → 건너뛴다)
+if [ "$1" != "skills" ]; then
 CURRENT_VERSION=$(grep '"@qwen-code/qwen-code"' npm-seed/package.json | head -n 1 | cut -d'"' -f4 | tr -d '^" ,')
 echo "=========================================================="
 echo " Checking Qwen Code core module version..."
@@ -60,25 +62,46 @@ else
   echo "⚠️ Warning: Failed to connect to npm registry. Building with current local version."
 fi
 echo ""
+fi  # end: qwen 레지스트리 점검(skills 서브타깃 제외)
 
 # 2. 타겟 플랫폼 및 버전 정보 결정
-#    사용법: ./make.sh [linux|windows] [version]
-#    - 첫 인자가 linux/windows(win)이면 타겟으로 소비하고, 아니면 windows(기본, 하위호환)로 간주한다.
+#    사용법: ./make.sh [linux|windows|windows-gui|skills] [version]
+#    - 첫 인자가 linux/windows(win)/windows-gui(gui)/skills 면 타겟으로 소비하고, 아니면 windows(기본, 하위호환)로 간주한다.
+#    - windows-gui(gui): CLI(qwen)·스킬을 빼고 Desktop(GUI) 중심으로만 패키징한다(용량 절감).
+#    - skills: 스킬 5종만 ~/.qwen 에 압축 해제하는 별도 배포 번들로 묶는다.
 #    - 남은 인자를 버전으로 쓰고, 없으면 연월일_시분 'YYYYMMDD_HHMM' 형식으로 자동 생성한다.
+#    - NO_GIT=1 환경변수: 포터블 git(MinGit)을 제외해 추가 경량화(대상 PC에 git 이 있을 때).
+#    - NO_SKILLS=1 환경변수: 스킬 5종을 패키지에서 제외한다(별도 배포: ./make.sh skills).
+#    - NO_DESKTOP=1 환경변수: Kobi Desktop(GUI)을 제외해 CLI 전용으로 패키징한다(full 빌드에만 적용).
+#      예: CLI 전용(GUI·스킬 제외) → NO_DESKTOP=1 NO_SKILLS=1 ./make.sh windows
 TARGET="windows"
+FLAVOR="full"
 case "$1" in
-  linux)       TARGET="linux";   shift ;;
-  windows|win) TARGET="windows"; shift ;;
+  linux)           TARGET="linux";   shift ;;
+  windows|win)     TARGET="windows"; shift ;;
+  windows-gui|gui) TARGET="windows"; FLAVOR="gui"; shift ;;
+  skills)          TARGET="skills";  shift ;;
 esac
+
+# 리눅스에는 데스크톱(GUI) 산출물이 없으므로 GUI 전용 조합을 금지한다.
+if [ "$TARGET" = "linux" ] && [ "$FLAVOR" = "gui" ]; then
+  echo "Error: linux 타겟은 GUI 전용(FLAVOR=gui)을 지원하지 않습니다."
+  exit 1
+fi
 
 VERSION=$1
 if [ -z "$VERSION" ]; then
   VERSION=$(date +%Y%m%d_%H%M)
 fi
 
-if [ "$TARGET" = "linux" ]; then
+if [ "$TARGET" = "skills" ]; then
+  PKG_NAME="Kobi_Skills_v${VERSION}.zip"
+elif [ "$TARGET" = "linux" ]; then
   DIST_ROOT_NAME="Kobi_Installer_linux"
   PKG_NAME="Kobi_Installer_linux_v${VERSION}.tar.gz"
+elif [ "$FLAVOR" = "gui" ]; then
+  DIST_ROOT_NAME="Kobi_Installer"
+  PKG_NAME="Kobi_Installer_gui_v${VERSION}.zip"
 else
   DIST_ROOT_NAME="Kobi_Installer"
   PKG_NAME="Kobi_Installer_v${VERSION}.zip"
@@ -126,6 +149,56 @@ rm -f kbpay-service-check.skill Kobi_Installer/assets/kbpay-service-check.skill
 (cd kbpay-service-check && zip -rq ../kbpay-service-check.skill *)
 cp kbpay-service-check.skill Kobi_Installer/assets/kbpay-service-check.skill
 
+# 3-b. skills 서브타깃: 스킬 5종만 별도 배포 번들로 묶고 종료한다.
+#      각 .skill 은 스킬 내용의 zip 이므로 skills/<name>/ 레이아웃으로 풀어, 사용자가
+#      %USERPROFILE%\.qwen\ 에 압축만 해제하면 GUI(및 CLI)가 스킬을 인식하도록 한다.
+if [ "$TARGET" = "skills" ]; then
+  echo "=========================================================="
+  echo " Packaging standalone skills bundle: $PKG_NAME"
+  echo "=========================================================="
+  SKILLS_DIST="dist_skills"
+  rm -rf "$SKILLS_DIST"
+  SKILLS_ROOT="$SKILLS_DIST/skills"
+  mkdir -p "$SKILLS_ROOT"
+  for S in jennifer-monitor project-bootstrap frism-cm office-edit kbpay-service-check; do
+    if [ ! -f "$S.skill" ]; then
+      echo "Error: $S.skill 을 찾을 수 없습니다. 스킬 재빌드 단계를 확인하세요."
+      exit 1
+    fi
+    mkdir -p "$SKILLS_ROOT/$S"
+    unzip -q "$S.skill" -d "$SKILLS_ROOT/$S"
+  done
+
+  cat <<'SKILLS_README_EOF' > "$SKILLS_DIST/README-skills.txt"
+Kobi 스킬 번들 (별도 배포)
+==========================
+
+설치 방법
+1) 이 zip 안의 skills 폴더를 사용자 홈의 .qwen 폴더로 복사(병합)합니다.
+   - 대상 경로: %USERPROFILE%\.qwen\skills\
+   - 예: 압축을 %USERPROFILE%\.qwen\ 에 그대로 풀면 됩니다.
+2) Kobi(CLI/Desktop)를 다시 실행하면 스킬이 인식됩니다.
+
+참고
+- 스킬의 node 스크립트(scripts\*.cjs)는 Kobi 설치가 PATH 에 등록한 node 로 실행됩니다.
+  (Kobi 설치본이 있으면 별도 node 설치가 필요 없습니다.)
+- 포함 스킬: jennifer-monitor, project-bootstrap, frism-cm, office-edit, kbpay-service-check
+SKILLS_README_EOF
+
+  rm -f "$PKG_NAME" "$SHA_NAME"
+  echo "Creating skills ZIP file..."
+  (cd "$SKILLS_DIST" && python3 -m zipfile -c "../$PKG_NAME" skills README-skills.txt)
+  sha256sum "$PKG_NAME" > "$SHA_NAME"
+  rm -rf "$SKILLS_DIST"
+
+  echo "=========================================================="
+  echo " Skills bundle completed successfully!"
+  echo " Result Files:"
+  ls -lh "$PKG_NAME" "$SHA_NAME"
+  echo "=========================================================="
+  exit 0
+fi
+
 # 4. Kobi_Runtime 빌드 준비
 echo "----------------------------------------------------------"
 echo " Pre-building Kobi_Runtime for $TARGET..."
@@ -133,9 +206,13 @@ echo "----------------------------------------------------------"
 RUNTIME_DIR="Kobi_Installer/Kobi_Runtime"
 rm -rf "$RUNTIME_DIR"
 mkdir -p "$RUNTIME_DIR/node"
-mkdir -p "$RUNTIME_DIR/qwen"
-mkdir -p "$RUNTIME_DIR/bin"
 mkdir -p "$RUNTIME_DIR/config"
+# GUI 전용 빌드는 CLI 에이전트(qwen)와 CLI 런처(bin)를 넣지 않는다(용량 절감). node 는 스킬의
+# node 스크립트 실행을 위해 GUI 전용에도 포함한다.
+if [ "$FLAVOR" != "gui" ]; then
+  mkdir -p "$RUNTIME_DIR/qwen"
+  mkdir -p "$RUNTIME_DIR/bin"
+fi
 
 # (1) Node.js 포터블 버전 압축 해제 (타겟 플랫폼별 자산 선택)
 if [ "$TARGET" = "linux" ]; then
@@ -167,7 +244,10 @@ fi
 # 특히 Desktop(GUI) 실행이 실패하므로, Git for Windows 가 서드파티 번들용으로 제공하는
 # 최소 배포판 MinGit(zip)을 함께 넣어 오프라인으로 git 을 제공한다. cmd\git.exe 가 PATH 진입점.
 # 자산(MinGit-*-64-bit.zip)이 없으면 경고만 하고 계속 진행한다(시스템 git 이 있는 CLI 전용 배포 대비).
-if [ "$TARGET" != "linux" ]; then
+# NO_GIT=1 이면 대상 PC에 git 이 있다고 보고 포터블 git 을 제외해 추가 경량화한다.
+if [ "$TARGET" != "linux" ] && [ "${NO_GIT:-0}" = "1" ]; then
+  echo "NO_GIT=1: 포터블 git(MinGit) 제외로 패키징합니다(대상 PC에 git 이 설치되어 있어야 합니다)."
+elif [ "$TARGET" != "linux" ]; then
   MINGIT_ARCHIVE=$(find Kobi_Installer/assets -maxdepth 2 -name "MinGit-*-64-bit.zip" | head -n 1)
   if [ -n "$MINGIT_ARCHIVE" ]; then
     echo "Extracting portable git (MinGit) for Windows..."
@@ -184,20 +264,24 @@ if [ "$TARGET" != "linux" ]; then
 fi
 
 # (2) Qwen Code 에이전트 오프라인 설치
-if [ "$TARGET" = "linux" ]; then
-  NPM_OS="linux"
+# GUI 전용 빌드는 Desktop(GUI)이 자체 qwen-code 런타임을 내장하므로 CLI 에이전트를 설치하지 않는다.
+if [ "$FLAVOR" = "gui" ]; then
+  echo "GUI 전용 빌드: CLI 에이전트(qwen) 오프라인 설치를 건너뜁니다."
 else
-  NPM_OS="win32"
-fi
-echo "Pre-installing Qwen Code targeting $NPM_OS (x64)..."
-TGZ_FILE=$(find Kobi_Installer/assets/pkg -name "*.tgz" | head -n 1)
-if [ -z "$TGZ_FILE" ]; then
-  echo "Error: Qwen Code tgz file not found!"
-  exit 1
-fi
+  if [ "$TARGET" = "linux" ]; then
+    NPM_OS="linux"
+  else
+    NPM_OS="win32"
+  fi
+  echo "Pre-installing Qwen Code targeting $NPM_OS (x64)..."
+  TGZ_FILE=$(find Kobi_Installer/assets/pkg -name "*.tgz" | head -n 1)
+  if [ -z "$TGZ_FILE" ]; then
+    echo "Error: Qwen Code tgz file not found!"
+    exit 1
+  fi
 
-# 임시 package.json 파일 생성
-cat <<EOF > "$RUNTIME_DIR/qwen/package.json"
+  # 임시 package.json 파일 생성
+  cat <<EOF > "$RUNTIME_DIR/qwen/package.json"
 {
   "name": "kobi-runtime",
   "version": "1.0.0",
@@ -205,31 +289,32 @@ cat <<EOF > "$RUNTIME_DIR/qwen/package.json"
 }
 EOF
 
-if ! command -v npm >/dev/null 2>&1; then
-  echo "Error: npm command not found in this shell. Cannot pre-install Qwen Code offline."
-  exit 1
-fi
+  if ! command -v npm >/dev/null 2>&1; then
+    echo "Error: npm command not found in this shell. Cannot pre-install Qwen Code offline."
+    exit 1
+  fi
 
-# npm install 실행 (타겟 플랫폼 64비트 타겟팅)
-npm install \
-  --prefix "$RUNTIME_DIR/qwen" \
-  "$TGZ_FILE" \
-  --cache "Kobi_Installer/assets/npm-cache" \
-  --offline \
-  --os="$NPM_OS" \
-  --cpu=x64 \
-  --include=optional \
-  --no-audit \
-  --no-fund
-if [ $? -ne 0 ]; then
-  echo "Error: npm install failed while pre-installing Qwen Code offline."
-  exit 1
-fi
+  # npm install 실행 (타겟 플랫폼 64비트 타겟팅)
+  npm install \
+    --prefix "$RUNTIME_DIR/qwen" \
+    "$TGZ_FILE" \
+    --cache "Kobi_Installer/assets/npm-cache" \
+    --offline \
+    --os="$NPM_OS" \
+    --cpu=x64 \
+    --include=optional \
+    --no-audit \
+    --no-fund
+  if [ $? -ne 0 ]; then
+    echo "Error: npm install failed while pre-installing Qwen Code offline."
+    exit 1
+  fi
 
-QWEN_CLI_ENTRY="$RUNTIME_DIR/qwen/node_modules/@qwen-code/qwen-code/cli-entry.js"
-if [ ! -f "$QWEN_CLI_ENTRY" ]; then
-  echo "Error: $QWEN_CLI_ENTRY was not produced by npm install. Aborting build so a broken installer isn't packaged."
-  exit 1
+  QWEN_CLI_ENTRY="$RUNTIME_DIR/qwen/node_modules/@qwen-code/qwen-code/cli-entry.js"
+  if [ ! -f "$QWEN_CLI_ENTRY" ]; then
+    echo "Error: $QWEN_CLI_ENTRY was not produced by npm install. Aborting build so a broken installer isn't packaged."
+    exit 1
+  fi
 fi
 
 # (3) 설정 파일 및 지침 파일 복사
@@ -258,8 +343,10 @@ if [ "$TARGET" = "linux" ]; then
   '
 fi
 
-# (4) bin/ 디렉터리에 실행 스크립트 작성
-if [ "$TARGET" = "linux" ]; then
+# (4) bin/ 디렉터리에 실행 스크립트 작성 (GUI 전용은 CLI 런처가 불필요하므로 생략)
+if [ "$FLAVOR" = "gui" ]; then
+echo "GUI 전용 빌드: CLI 런처(kobi) 생성을 건너뜁니다."
+elif [ "$TARGET" = "linux" ]; then
 echo "Generating execution script (kobi) in bin..."
 cat <<'KOBI_SH_EOF' > "$RUNTIME_DIR/bin/kobi"
 #!/usr/bin/env bash
@@ -542,12 +629,17 @@ else
 fi
 
 # 필수 assets 복사 (스킬 5종)
+# GUI 전용 빌드는 스킬을 담지 않는다(별도 배포: ./make.sh skills → Kobi_Skills_v*.zip).
 mkdir -p "$DIST_PKG_DIR/assets"
-cp Kobi_Installer/assets/jennifer-monitor.skill "$DIST_PKG_DIR/assets/"
-cp Kobi_Installer/assets/project-bootstrap.skill "$DIST_PKG_DIR/assets/"
-cp Kobi_Installer/assets/frism-cm.skill "$DIST_PKG_DIR/assets/"
-cp Kobi_Installer/assets/office-edit.skill "$DIST_PKG_DIR/assets/"
-cp Kobi_Installer/assets/kbpay-service-check.skill "$DIST_PKG_DIR/assets/"
+if [ "$FLAVOR" = "gui" ] || [ "$NO_SKILLS" = "1" ]; then
+  echo "스킬 5종을 패키지에서 제외합니다(별도 배포 번들 사용: ./make.sh skills)."
+else
+  cp Kobi_Installer/assets/jennifer-monitor.skill "$DIST_PKG_DIR/assets/"
+  cp Kobi_Installer/assets/project-bootstrap.skill "$DIST_PKG_DIR/assets/"
+  cp Kobi_Installer/assets/frism-cm.skill "$DIST_PKG_DIR/assets/"
+  cp Kobi_Installer/assets/office-edit.skill "$DIST_PKG_DIR/assets/"
+  cp Kobi_Installer/assets/kbpay-service-check.skill "$DIST_PKG_DIR/assets/"
+fi
 
 # Computer Use(화면 읽기 전용) 드라이버 자산 복사 (윈도우 전용; 리눅스는 드라이버 없음 → 생략)
 if [ "$TARGET" != "linux" ]; then
@@ -559,12 +651,18 @@ fi
 # 리브랜딩 빌드 산출물(desktop-brand/build-desktop.sh 참고)이 있을 때만 포함한다.
 # 폐쇄망 반입용으로 미리 빌드해 assets/desktop 에 넣어두는 것이 전제이며,
 # 아직 빌드하지 않았다면 경고만 출력하고 CLI 전용 패키지로 계속 진행한다.
-if [ "$TARGET" != "linux" ]; then
+if [ "$TARGET" != "linux" ] && [ "$NO_DESKTOP" = "1" ] && [ "$FLAVOR" != "gui" ]; then
+  echo "NO_DESKTOP=1: Kobi Desktop(GUI)을 패키지에서 제외합니다(CLI 전용)."
+elif [ "$TARGET" != "linux" ]; then
   DESKTOP_EXE=$(find Kobi_Installer/assets/desktop -maxdepth 1 -name "Kobi-Desktop-*.exe" 2>/dev/null | head -n 1)
   if [ -n "$DESKTOP_EXE" ]; then
     mkdir -p "$DIST_PKG_DIR/assets/desktop"
     cp "$DESKTOP_EXE" "$DIST_PKG_DIR/assets/desktop/"
     echo "Kobi Desktop 설치물이 배포 패키지에 포함되었습니다: $(basename "$DESKTOP_EXE")"
+  elif [ "$FLAVOR" = "gui" ]; then
+    echo "Error: GUI 전용 빌드인데 Kobi-Desktop-*.exe 자산이 없습니다."
+    echo "       desktop-brand/build-desktop.sh 로 먼저 Desktop 을 빌드해 assets/desktop 에 넣으세요."
+    exit 1
   else
     echo "안내: Kobi-Desktop-*.exe 자산이 없어 Desktop(GUI) 없이 CLI 전용으로 패키징합니다."
     echo "      (Desktop 포함 배포를 원하면 desktop-brand/build-desktop.sh 로 먼저 빌드하세요.)"
