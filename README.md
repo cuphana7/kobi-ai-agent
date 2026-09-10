@@ -131,7 +131,8 @@ CLI(`kobi`)에 더해, 터미널이 익숙하지 않은 사용자를 위한 **�
 - **동시 설치**: 배포 패키지에 Desktop 설치물(`assets/desktop/Kobi-Desktop-x64.exe`)이 포함되어 있으면, `Install-Kobi.cmd` 실행 시 CLI와 함께 **무인 설치**됩니다(per-user 설치라 관리자 권한 불필요). 설치 후 **시작 메뉴에서 "Kobi"**를 실행하면 됩니다.
 - **사내 vLLM 사전 연결**: 설치기가 `~/.qwen/settings.json`에 사내 vLLM 연결 정보를 구성하므로, Desktop 최초 실행부터 바로 사내 모델로 대화할 수 있습니다. CLI와 동일한 스킬/지침(`~/.qwen/skills`, `QWEN.md`)도 그대로 공유됩니다.
 - **포터블 git 자동 포함**: qwen-code 런타임(CLI·Desktop 공용)은 `git`에 의존하며, git이 없는 PC에서는 특히 Desktop 실행이 실패합니다. 이를 위해 패키지에 **MinGit**(Git for Windows 최소 번들판)을 함께 넣어 `Kobi_Runtime\git`으로 추출하고 설치 시 `git\cmd`를 PATH에 등록합니다. 별도 git 설치가 필요 없습니다. (빌드 시 `Kobi_Installer/assets/`에 `MinGit-*-64-bit.zip`을 넣어두어야 포함됩니다.)
-- **CLI 전용 배포**: Desktop 설치물이 패키지에 없으면 기존과 동일하게 **CLI 전용**으로 설치됩니다(경고 없이 건너뜀).
+- **CLI 전용 배포**: Desktop 설치물이 패키지에 없으면 기존과 동일하게 **CLI 전용**으로 설치됩니다(경고 없이 건너뜀). 조합형 빌드에서 GUI·스킬을 명시적으로 빼려면 `NO_DESKTOP=1 NO_SKILLS=1 ./make.sh windows`처럼 환경변수를 지정합니다(`NO_DESKTOP=1` Desktop 제외, `NO_SKILLS=1` 스킬 5종 제외, `NO_GIT=1` 포터블 git 제외). 예: CLI만 필요하면 `NO_DESKTOP=1 NO_SKILLS=1 ./make.sh windows`로 GUI·스킬 없는 경량 패키지를 만듭니다.
+- **GUI 전용 배포**: GUI만 필요하고 용량을 줄이려면 `./make.sh windows-gui`로 **GUI 전용 패키지**(`Kobi_Installer_gui_v*.zip`)를 만들 수 있습니다. CLI 에이전트(qwen)와 스킬을 빼서 조합형 대비 약 26% 작습니다(node·git·Desktop·설정은 유지). 스킬은 `./make.sh skills`로 만든 **별도 번들**(`Kobi_Skills_v*.zip`)을 사용자 홈의 `~/.qwen`에 압축 해제해 사용합니다. 같은 설치기가 조합형/GUI 전용을 자동 감지하며, node가 PATH에 등록되어 스킬의 node 스크립트가 GUI에서도 동작합니다.
 - **자동 업데이트**: 폐쇄망 환경이므로 앱 자체 자동 업데이트는 동작하지 않습니다(정상).
 - **API 키 주의**: 사내 vLLM에 키 인증이 켜지면, CLI는 실행 시 자동으로 키를 저장하지만 **Desktop은 별도로** GUI 설정 또는 `~/.qwen/settings.json`에 키를 반영해야 할 수 있습니다.
 
