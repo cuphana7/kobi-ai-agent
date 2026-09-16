@@ -1,0 +1,122 @@
+0 verbose cli /usr/local/nvm/versions/node/v24.18.1/bin/node /usr/local/nvm/versions/node/v24.18.1/bin/npm
+1 info using npm@12.0.2
+2 info using node@v24.18.1
+3 silly config load:file:/usr/local/nvm/versions/node/v24.18.1/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/cuphana7/kobi-package/Kobi_Installer/Kobi_Runtime/qwen/.npmrc
+5 silly config load:file:/home/cuphana7/.npmrc
+6 silly config load:file:/home/cuphana7/kobi-package/Kobi_Installer/Kobi_Runtime/qwen/etc/npmrc
+7 verbose title npm install Kobi_Installer/assets/pkg/qwen-code-qwen-code-0.21.0.tgz
+8 verbose argv "install" "--prefix" "Kobi_Installer/Kobi_Runtime/qwen" "Kobi_Installer/assets/pkg/qwen-code-qwen-code-0.21.0.tgz" "--cache" "Kobi_Installer/assets/npm-cache" "--offline" "--os" "win32" "--cpu" "x64" "--include" "optional" "--no-audit" "--no-fund"
+9 verbose logfile logs-max:10 dir:/home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-08-11T08_31_30_585Z-
+10 verbose logfile /home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-08-11T08_31_30_585Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+13 silly logfile done cleaning log files
+14 silly idealTree buildDeps
+15 silly fetch manifest @qwen-code/qwen-code@file:../../assets/pkg/qwen-code-qwen-code-0.21.0.tgz
+16 silly placeDep ROOT @qwen-code/qwen-code@0.21.0 OK for: kobi-runtime@1.0.0 want: file:../../assets/pkg/qwen-code-qwen-code-0.21.0.tgz
+17 silly fetch manifest @qwen-code/audio-capture@0.21.0
+18 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2faudio-capture cache-miss
+19 silly fetch manifest @lydell/node-pty@1.2.0-beta.10
+20 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty cache-miss
+21 http fetch GET 200 https://registry.npmjs.org/@qwen-code%2faudio-capture 45ms (cache stale)
+22 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2faudio-capture set size:103154 disposed:false
+23 silly fetch manifest @lydell/node-pty-darwin-arm64@1.2.0-beta.10
+24 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-darwin-arm64 cache-miss
+25 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty 60ms (cache stale)
+26 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty set size:29843 disposed:false
+27 silly fetch manifest @lydell/node-pty-darwin-x64@1.2.0-beta.10
+28 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-darwin-x64 cache-miss
+29 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-darwin-x64 4ms (cache stale)
+30 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-darwin-x64 set size:22979 disposed:false
+31 silly fetch manifest @lydell/node-pty-linux-x64@1.2.0-beta.10
+32 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-linux-x64 cache-miss
+33 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-linux-x64 3ms (cache stale)
+34 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-linux-x64 set size:22862 disposed:false
+35 silly fetch manifest @lydell/node-pty-win32-arm64@1.2.0-beta.10
+36 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-win32-arm64 cache-miss
+37 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-win32-arm64 4ms (cache stale)
+38 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-win32-arm64 set size:20375 disposed:false
+39 silly fetch manifest @lydell/node-pty-win32-x64@1.2.0-beta.10
+40 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-win32-x64 cache-miss
+41 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-darwin-arm64 36ms (cache stale)
+42 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-darwin-arm64 set size:23217 disposed:false
+43 silly fetch manifest @teddyzhu/clipboard@0.0.5
+44 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard cache-miss
+45 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-win32-x64 4ms (cache stale)
+46 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-win32-x64 set size:22897 disposed:false
+47 silly fetch manifest @teddyzhu/clipboard-darwin-arm64@0.0.5
+48 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-arm64 cache-miss
+49 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-arm64 4ms (cache stale)
+50 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-arm64 set size:17629 disposed:false
+51 silly fetch manifest @teddyzhu/clipboard-darwin-x64@0.0.5
+52 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-x64 cache-miss
+53 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard 6ms (cache stale)
+54 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard set size:45583 disposed:false
+55 silly fetch manifest @teddyzhu/clipboard-linux-x64-gnu@0.0.5
+56 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-x64-gnu cache-miss
+57 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-x64-gnu 3ms (cache stale)
+58 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-x64-gnu set size:17824 disposed:false
+59 silly fetch manifest @teddyzhu/clipboard-linux-arm64-gnu@0.0.5
+60 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-arm64-gnu cache-miss
+61 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-x64 6ms (cache stale)
+62 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-darwin-x64 set size:17478 disposed:false
+63 silly fetch manifest @teddyzhu/clipboard-win32-x64-msvc@0.0.5
+64 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-x64-msvc cache-miss
+65 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-arm64-gnu 16ms (cache stale)
+66 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-linux-arm64-gnu set size:17975 disposed:false
+67 silly fetch manifest @teddyzhu/clipboard-win32-arm64-msvc@0.0.5
+68 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-arm64-msvc cache-miss
+69 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-arm64-msvc 4ms (cache stale)
+70 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-arm64-msvc set size:17884 disposed:false
+71 http fetch GET 200 https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-x64-msvc 35ms (cache stale)
+72 silly packumentCache full:https://registry.npmjs.org/@teddyzhu%2fclipboard-win32-x64-msvc set size:17732 disposed:false
+73 silly placeDep ROOT @lydell/node-pty@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.21.0 want: 1.2.0-beta.10
+74 silly placeDep ROOT @lydell/node-pty-darwin-arm64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.21.0 want: 1.2.0-beta.10
+75 silly placeDep ROOT @lydell/node-pty-darwin-x64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.21.0 want: 1.2.0-beta.10
+76 silly placeDep ROOT @lydell/node-pty-linux-x64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.21.0 want: 1.2.0-beta.10
+77 silly placeDep ROOT @lydell/node-pty-win32-arm64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.21.0 want: 1.2.0-beta.10
+78 silly placeDep ROOT @lydell/node-pty-win32-x64@1.2.0-beta.10 OK for: @qwen-code/qwen-code@0.21.0 want: 1.2.0-beta.10
+79 silly placeDep ROOT @qwen-code/audio-capture@0.21.0 OK for: @qwen-code/qwen-code@0.21.0 want: 0.21.0
+80 silly placeDep ROOT @teddyzhu/clipboard@0.0.5 OK for: @qwen-code/qwen-code@0.21.0 want: 0.0.5
+81 silly placeDep ROOT @teddyzhu/clipboard-darwin-arm64@0.0.5 OK for: @qwen-code/qwen-code@0.21.0 want: 0.0.5
+82 silly placeDep ROOT @teddyzhu/clipboard-darwin-x64@0.0.5 OK for: @qwen-code/qwen-code@0.21.0 want: 0.0.5
+83 silly placeDep ROOT @teddyzhu/clipboard-linux-arm64-gnu@0.0.5 OK for: @qwen-code/qwen-code@0.21.0 want: 0.0.5
+84 silly placeDep ROOT @teddyzhu/clipboard-linux-x64-gnu@0.0.5 OK for: @qwen-code/qwen-code@0.21.0 want: 0.0.5
+85 silly placeDep ROOT @teddyzhu/clipboard-win32-arm64-msvc@0.0.5 OK for: @qwen-code/qwen-code@0.21.0 want: 0.0.5
+86 silly placeDep ROOT @teddyzhu/clipboard-win32-x64-msvc@0.0.5 OK for: @qwen-code/qwen-code@0.21.0 want: 0.0.5
+87 silly fetch manifest @lydell/node-pty-linux-arm64@1.2.0-beta.10
+88 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-linux-arm64 cache-miss
+89 silly fetch manifest node-gyp-build@^4.8.4
+90 silly packumentCache full:https://registry.npmjs.org/node-gyp-build cache-miss
+91 http fetch GET 200 https://registry.npmjs.org/@lydell%2fnode-pty-linux-arm64 7ms (cache stale)
+92 silly packumentCache full:https://registry.npmjs.org/@lydell%2fnode-pty-linux-arm64 set size:12259 disposed:false
+93 http fetch GET 200 https://registry.npmjs.org/node-gyp-build 19ms (cache stale)
+94 silly packumentCache full:https://registry.npmjs.org/node-gyp-build set size:84545 disposed:false
+95 silly placeDep ROOT @lydell/node-pty-linux-arm64@1.2.0-beta.10 OK for: @lydell/node-pty@1.2.0-beta.10 want: 1.2.0-beta.10
+96 silly placeDep ROOT node-gyp-build@4.8.4 OK for: @qwen-code/audio-capture@0.21.0 want: ^4.8.4
+97 silly reify moves {}
+98 http cache node-gyp-build@https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.8.4.tgz 0ms (cache hit)
+99 http cache @teddyzhu/clipboard@https://registry.npmjs.org/@teddyzhu/clipboard/-/clipboard-0.0.5.tgz 0ms (cache hit)
+100 http cache @qwen-code/audio-capture@https://registry.npmjs.org/@qwen-code/audio-capture/-/audio-capture-0.21.0.tgz 1ms (cache hit)
+101 http cache @lydell/node-pty-win32-x64@https://registry.npmjs.org/@lydell/node-pty-win32-x64/-/node-pty-win32-x64-1.2.0-beta.10.tgz 0ms (cache hit)
+102 http cache @teddyzhu/clipboard-win32-x64-msvc@https://registry.npmjs.org/@teddyzhu/clipboard-win32-x64-msvc/-/clipboard-win32-x64-msvc-0.0.5.tgz 0ms (cache hit)
+103 http cache @lydell/node-pty@https://registry.npmjs.org/@lydell/node-pty/-/node-pty-1.2.0-beta.10.tgz 0ms (cache hit)
+104 http cache @qwen-code/qwen-code@file:/home/cuphana7/kobi-package/Kobi_Installer/assets/pkg/qwen-code-qwen-code-0.21.0.tgz 0ms (cache hit)
+105 silly ADD node_modules/node-gyp-build
+106 silly ADD node_modules/@teddyzhu/clipboard-win32-x64-msvc
+107 silly ADD node_modules/@teddyzhu/clipboard
+108 silly ADD node_modules/@qwen-code/audio-capture
+109 silly ADD node_modules/@lydell/node-pty-win32-x64
+110 silly ADD node_modules/@lydell/node-pty
+111 silly ADD node_modules/@qwen-code/qwen-code
+112 warn install-scripts 1 package had install scripts blocked because they are not covered by allowScripts:
+112 warn install-scripts   @qwen-code/audio-capture@0.21.0 (install: node install.js)
+112 warn install-scripts
+112 warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+113 verbose cwd /home/cuphana7/kobi-package
+114 verbose os Linux 6.6.143+
+115 verbose node v24.18.1
+116 verbose npm  v12.0.2
+117 verbose exit 0
+118 info ok

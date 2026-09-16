@@ -75,13 +75,15 @@ Write-Host "[3/4] 사용자 환경 변수 Path에서 Kobi 명령어 제거"
 try {
     $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
     if ($UserPath) {
-        # 세미콜론 기준으로 분할 후 Kobi 관련 모든 경로(bin, 번들 git)를 필터링하여 제거
+        # 세미콜론 기준으로 분할 후 Kobi 관련 모든 경로(bin, 번들 git, node)를 필터링하여 제거
         $Parts = $UserPath -split ';' | Where-Object {
             $_ -and
             ($_ -notlike "*Kobi_Runtime\bin*") -and
             ($_ -notlike "*Kobi_Runtime/bin*") -and
             ($_ -notlike "*Kobi_Runtime\git*") -and
-            ($_ -notlike "*Kobi_Runtime/git*")
+            ($_ -notlike "*Kobi_Runtime/git*") -and
+            ($_ -notlike "*Kobi_Runtime\node*") -and
+            ($_ -notlike "*Kobi_Runtime/node*")
         }
         $NewPath = $Parts -join ';'
         [Environment]::SetEnvironmentVariable("Path", $NewPath, "User")

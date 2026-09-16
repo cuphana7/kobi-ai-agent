@@ -1,0 +1,246 @@
+0 verbose cli /usr/local/nvm/versions/node/v24.19.0/bin/node /usr/local/nvm/versions/node/v24.19.0/bin/npm
+1 info using npm@12.0.2
+2 info using node@v24.19.0
+3 silly config load:file:/usr/local/nvm/versions/node/v24.19.0/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/cuphana7/kobi-package/npm-seed/.npmrc
+5 silly config load:file:/home/cuphana7/.npmrc
+6 silly config load:file:/usr/local/nvm/versions/node/v24.19.0/etc/npmrc
+7 verbose title npm install @qwen-code/qwen-code@0.21.13
+8 verbose argv "install" "@qwen-code/qwen-code@0.21.13" "--cache" "../Kobi_Installer/assets/npm-cache" "--no-audit" "--no-fund"
+9 verbose logfile logs-max:10 dir:/home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-08-18T02_26_36_366Z-
+10 verbose logfile /home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-08-18T02_26_36_366Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly logfile done cleaning log files
+13 silly packumentCache heap:2348810240 maxSize:587202560 maxEntrySize:293601280
+14 silly idealTree buildDeps
+15 silly fetch manifest @qwen-code/qwen-code@0.21.13
+16 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code cache-miss
+17 http fetch GET 200 https://registry.npmjs.org/@qwen-code%2fqwen-code 420ms (cache updated)
+18 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code set size:undefined disposed:false
+19 silly placeDep ROOT @qwen-code/qwen-code@0.21.13 REPLACE for:  want: 0.21.13
+20 silly fetch manifest sharp@0.35.3
+21 silly packumentCache full:https://registry.npmjs.org/sharp cache-miss
+22 silly fetch manifest @qwen-code/audio-capture@0.21.13
+23 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2faudio-capture cache-miss
+24 http fetch GET 200 https://registry.npmjs.org/sharp 56ms (cache miss)
+25 silly packumentCache full:https://registry.npmjs.org/sharp set size:undefined disposed:false
+26 http fetch GET 200 https://registry.npmjs.org/@qwen-code%2faudio-capture 372ms (cache updated)
+27 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2faudio-capture set size:undefined disposed:false
+28 silly placeDep ROOT @qwen-code/audio-capture@0.21.13 OK for: @qwen-code/qwen-code@0.21.13 want: 0.21.13
+29 silly placeDep ROOT sharp@0.35.3 OK for: @qwen-code/qwen-code@0.21.13 want: 0.35.3
+30 silly fetch manifest node-gyp-build@^4.8.4
+31 silly packumentCache full:https://registry.npmjs.org/node-gyp-build cache-miss
+32 silly fetch manifest @img/colour@^1.1.0
+33 silly packumentCache full:https://registry.npmjs.org/@img%2fcolour cache-miss
+34 http fetch GET 200 https://registry.npmjs.org/node-gyp-build 30ms (cache revalidated)
+35 silly packumentCache full:https://registry.npmjs.org/node-gyp-build set size:84545 disposed:false
+36 silly fetch manifest detect-libc@^2.1.2
+37 silly packumentCache full:https://registry.npmjs.org/detect-libc cache-miss
+38 http fetch GET 200 https://registry.npmjs.org/@img%2fcolour 40ms (cache miss)
+39 silly packumentCache full:https://registry.npmjs.org/@img%2fcolour set size:undefined disposed:false
+40 silly fetch manifest semver@^7.8.5
+41 silly packumentCache full:https://registry.npmjs.org/semver cache-miss
+42 http fetch GET 200 https://registry.npmjs.org/detect-libc 24ms (cache miss)
+43 silly packumentCache full:https://registry.npmjs.org/detect-libc set size:undefined disposed:false
+44 silly fetch manifest @img/sharp-darwin-arm64@0.35.3
+45 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-darwin-arm64 cache-miss
+46 http fetch GET 200 https://registry.npmjs.org/semver 74ms (cache updated)
+47 silly packumentCache full:https://registry.npmjs.org/semver set size:undefined disposed:false
+48 silly fetch manifest @img/sharp-darwin-x64@0.35.3
+49 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-darwin-x64 cache-miss
+50 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-darwin-arm64 66ms (cache miss)
+51 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-darwin-arm64 set size:undefined disposed:false
+52 silly fetch manifest @img/sharp-freebsd-wasm32@0.35.3
+53 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-freebsd-wasm32 cache-miss
+54 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-freebsd-wasm32 48ms (cache miss)
+55 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-freebsd-wasm32 set size:undefined disposed:false
+56 silly fetch manifest @img/sharp-libvips-darwin-arm64@1.3.2
+57 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-darwin-arm64 cache-miss
+58 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-darwin-x64 57ms (cache miss)
+59 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-darwin-x64 set size:undefined disposed:false
+60 silly fetch manifest @img/sharp-libvips-darwin-x64@1.3.2
+61 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-darwin-x64 cache-miss
+62 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-darwin-arm64 41ms (cache miss)
+63 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-darwin-arm64 set size:undefined disposed:false
+64 silly fetch manifest @img/sharp-libvips-linux-arm@1.3.2
+65 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm cache-miss
+66 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-darwin-x64 44ms (cache miss)
+67 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-darwin-x64 set size:undefined disposed:false
+68 silly fetch manifest @img/sharp-libvips-linux-arm64@1.3.2
+69 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm64 cache-miss
+70 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm 39ms (cache miss)
+71 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm set size:undefined disposed:false
+72 silly fetch manifest @img/sharp-libvips-linux-ppc64@1.3.2
+73 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-ppc64 cache-miss
+74 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm64 47ms (cache miss)
+75 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-arm64 set size:undefined disposed:false
+76 silly fetch manifest @img/sharp-libvips-linux-riscv64@1.3.2
+77 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-riscv64 cache-miss
+78 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-linux-ppc64 44ms (cache miss)
+79 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-ppc64 set size:undefined disposed:false
+80 silly fetch manifest @img/sharp-libvips-linux-s390x@1.3.2
+81 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-s390x cache-miss
+82 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-linux-riscv64 38ms (cache miss)
+83 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-riscv64 set size:undefined disposed:false
+84 silly fetch manifest @img/sharp-libvips-linux-x64@1.3.2
+85 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-x64 cache-miss
+86 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-linux-s390x 44ms (cache miss)
+87 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-s390x set size:undefined disposed:false
+88 silly fetch manifest @img/sharp-libvips-linuxmusl-arm64@1.3.2
+89 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linuxmusl-arm64 cache-miss
+90 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-linux-x64 40ms (cache miss)
+91 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linux-x64 set size:undefined disposed:false
+92 silly fetch manifest @img/sharp-libvips-linuxmusl-x64@1.3.2
+93 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linuxmusl-x64 cache-miss
+94 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-linuxmusl-arm64 39ms (cache miss)
+95 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linuxmusl-arm64 set size:undefined disposed:false
+96 silly fetch manifest @img/sharp-linux-arm@0.35.3
+97 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-arm cache-miss
+98 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-libvips-linuxmusl-x64 41ms (cache miss)
+99 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-libvips-linuxmusl-x64 set size:undefined disposed:false
+100 silly fetch manifest @img/sharp-linux-arm64@0.35.3
+101 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-arm64 cache-miss
+102 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-linux-arm 37ms (cache miss)
+103 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-arm set size:undefined disposed:false
+104 silly fetch manifest @img/sharp-linux-ppc64@0.35.3
+105 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-ppc64 cache-miss
+106 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-linux-arm64 43ms (cache miss)
+107 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-arm64 set size:undefined disposed:false
+108 silly fetch manifest @img/sharp-linux-riscv64@0.35.3
+109 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-riscv64 cache-miss
+110 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-linux-ppc64 39ms (cache miss)
+111 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-ppc64 set size:undefined disposed:false
+112 silly fetch manifest @img/sharp-linux-s390x@0.35.3
+113 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-s390x cache-miss
+114 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-linux-riscv64 37ms (cache miss)
+115 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-riscv64 set size:undefined disposed:false
+116 silly fetch manifest @img/sharp-linux-x64@0.35.3
+117 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-x64 cache-miss
+118 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-linux-x64 42ms (cache miss)
+119 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-x64 set size:undefined disposed:false
+120 silly fetch manifest @img/sharp-linuxmusl-arm64@0.35.3
+121 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linuxmusl-arm64 cache-miss
+122 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-linux-s390x 70ms (cache miss)
+123 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linux-s390x set size:undefined disposed:false
+124 silly fetch manifest @img/sharp-linuxmusl-x64@0.35.3
+125 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linuxmusl-x64 cache-miss
+126 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-linuxmusl-arm64 48ms (cache miss)
+127 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linuxmusl-arm64 set size:undefined disposed:false
+128 silly fetch manifest @img/sharp-webcontainers-wasm32@0.35.3
+129 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-webcontainers-wasm32 cache-miss
+130 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-linuxmusl-x64 38ms (cache miss)
+131 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-linuxmusl-x64 set size:undefined disposed:false
+132 silly fetch manifest @img/sharp-win32-arm64@0.35.3
+133 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-win32-arm64 cache-miss
+134 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-webcontainers-wasm32 49ms (cache miss)
+135 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-webcontainers-wasm32 set size:undefined disposed:false
+136 silly fetch manifest @img/sharp-win32-ia32@0.35.3
+137 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-win32-ia32 cache-miss
+138 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-win32-arm64 45ms (cache miss)
+139 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-win32-arm64 set size:undefined disposed:false
+140 silly fetch manifest @img/sharp-win32-x64@0.35.3
+141 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-win32-x64 cache-miss
+142 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-win32-ia32 48ms (cache miss)
+143 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-win32-ia32 set size:undefined disposed:false
+144 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-win32-x64 48ms (cache miss)
+145 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-win32-x64 set size:undefined disposed:false
+146 silly placeDep ROOT node-gyp-build@4.8.4 OK for: @qwen-code/audio-capture@0.21.13 want: ^4.8.4
+147 silly placeDep ROOT @img/colour@1.1.0 OK for: sharp@0.35.3 want: ^1.1.0
+148 silly placeDep ROOT @img/sharp-darwin-arm64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+149 silly placeDep ROOT @img/sharp-darwin-x64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+150 silly placeDep ROOT @img/sharp-freebsd-wasm32@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+151 silly placeDep ROOT @img/sharp-libvips-darwin-arm64@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+152 silly placeDep ROOT @img/sharp-libvips-darwin-x64@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+153 silly placeDep ROOT @img/sharp-libvips-linux-arm@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+154 silly placeDep ROOT @img/sharp-libvips-linux-arm64@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+155 silly placeDep ROOT @img/sharp-libvips-linux-ppc64@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+156 silly placeDep ROOT @img/sharp-libvips-linux-riscv64@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+157 silly placeDep ROOT @img/sharp-libvips-linux-s390x@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+158 silly placeDep ROOT @img/sharp-libvips-linux-x64@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+159 silly placeDep ROOT @img/sharp-libvips-linuxmusl-arm64@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+160 silly placeDep ROOT @img/sharp-libvips-linuxmusl-x64@1.3.2 OK for: sharp@0.35.3 want: 1.3.2
+161 silly placeDep ROOT @img/sharp-linux-arm@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+162 silly placeDep ROOT @img/sharp-linux-arm64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+163 silly placeDep ROOT @img/sharp-linux-ppc64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+164 silly placeDep ROOT @img/sharp-linux-riscv64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+165 silly placeDep ROOT @img/sharp-linux-s390x@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+166 silly placeDep ROOT @img/sharp-linux-x64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+167 silly placeDep ROOT @img/sharp-linuxmusl-arm64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+168 silly placeDep ROOT @img/sharp-linuxmusl-x64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+169 silly placeDep ROOT @img/sharp-webcontainers-wasm32@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+170 silly placeDep ROOT @img/sharp-win32-arm64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+171 silly placeDep ROOT @img/sharp-win32-ia32@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+172 silly placeDep ROOT @img/sharp-win32-x64@0.35.3 OK for: sharp@0.35.3 want: 0.35.3
+173 silly placeDep ROOT detect-libc@2.1.2 OK for: sharp@0.35.3 want: ^2.1.2
+174 silly placeDep ROOT semver@7.8.5 OK for: sharp@0.35.3 want: ^7.8.5
+175 silly fetch manifest @img/sharp-wasm32@0.35.3
+176 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-wasm32 cache-miss
+177 silly fetch manifest @img/sharp-wasm32@0.35.3
+178 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-wasm32 cache-miss
+179 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-wasm32 45ms (cache miss)
+180 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-wasm32 set size:undefined disposed:false
+181 http fetch GET 200 https://registry.npmjs.org/@img%2fsharp-wasm32 47ms (cache miss)
+182 silly packumentCache full:https://registry.npmjs.org/@img%2fsharp-wasm32 set size:undefined disposed:false
+183 silly placeDep ROOT @img/sharp-wasm32@0.35.3 OK for: @img/sharp-freebsd-wasm32@0.35.3 want: 0.35.3
+184 silly fetch manifest @emnapi/runtime@^1.11.1
+185 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fruntime cache-miss
+186 http fetch GET 200 https://registry.npmjs.org/@emnapi%2fruntime 45ms (cache miss)
+187 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fruntime set size:undefined disposed:false
+188 silly placeDep ROOT @emnapi/runtime@1.11.3 OK for: @img/sharp-wasm32@0.35.3 want: ^1.11.1
+189 silly fetch manifest tslib@^2.4.0
+190 silly packumentCache full:https://registry.npmjs.org/tslib cache-miss
+191 http fetch GET 200 https://registry.npmjs.org/tslib 28ms (cache miss)
+192 silly packumentCache full:https://registry.npmjs.org/tslib set size:undefined disposed:false
+193 silly placeDep ROOT tslib@2.8.1 OK for: @emnapi/runtime@1.11.3 want: ^2.4.0
+194 silly reify mark retired [
+194 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/audio-capture'
+194 silly reify ]
+195 silly reify mark retired [
+195 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/qwen-code',
+195 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/qwen'
+195 silly reify ]
+196 silly reify moves {
+196 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/audio-capture': '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/.audio-capture-wy6ZfFFM',
+196 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/qwen-code': '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/.qwen-code-bbfnVX8C',
+196 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/qwen': '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/.qwen-AQN6r1bt'
+196 silly reify }
+197 http cache semver@https://registry.npmjs.org/semver/-/semver-7.8.5.tgz 1ms (cache hit)
+198 http cache @img/sharp-linux-x64@https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.3.tgz 0ms (cache hit)
+199 http cache @img/sharp-libvips-linux-x64@https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.2.tgz 0ms (cache hit)
+200 http cache @img/colour@https://registry.npmjs.org/@img/colour/-/colour-1.1.0.tgz 0ms (cache hit)
+201 http cache sharp@https://registry.npmjs.org/sharp/-/sharp-0.35.3.tgz 0ms (cache hit)
+202 http cache @qwen-code/qwen-code@https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.21.13.tgz 0ms (cache hit)
+203 http cache @qwen-code/audio-capture@https://registry.npmjs.org/@qwen-code/audio-capture/-/audio-capture-0.21.13.tgz 0ms (cache hit)
+204 http cache detect-libc@https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz 0ms (cache hit)
+205 silly tarball no local data for @img/sharp-linux-x64@https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.3.tgz. Extracting by manifest.
+206 silly tarball no local data for @img/sharp-libvips-linux-x64@https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.2.tgz. Extracting by manifest.
+207 silly tarball no local data for @img/colour@https://registry.npmjs.org/@img/colour/-/colour-1.1.0.tgz. Extracting by manifest.
+208 silly tarball no local data for sharp@https://registry.npmjs.org/sharp/-/sharp-0.35.3.tgz. Extracting by manifest.
+209 silly tarball no local data for @qwen-code/qwen-code@https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.21.13.tgz. Extracting by manifest.
+210 silly tarball no local data for @qwen-code/audio-capture@https://registry.npmjs.org/@qwen-code/audio-capture/-/audio-capture-0.21.13.tgz. Extracting by manifest.
+211 silly tarball no local data for detect-libc@https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz. Extracting by manifest.
+212 http fetch GET 200 https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.3.tgz 97ms (cache miss)
+213 http fetch GET 200 https://registry.npmjs.org/sharp/-/sharp-0.35.3.tgz 558ms (cache miss)
+214 http fetch GET 200 https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.2.tgz 568ms (cache miss)
+215 http fetch GET 200 https://registry.npmjs.org/@qwen-code/audio-capture/-/audio-capture-0.21.13.tgz 718ms (cache miss)
+216 http fetch GET 200 https://registry.npmjs.org/@img/colour/-/colour-1.1.0.tgz 724ms (cache miss)
+217 http fetch GET 200 https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz 773ms (cache miss)
+218 http fetch GET 200 https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.21.13.tgz 1636ms (cache miss)
+219 silly ADD node_modules/semver
+220 silly ADD node_modules/detect-libc
+221 silly ADD node_modules/@img/sharp-linux-x64
+222 silly ADD node_modules/@img/sharp-libvips-linux-x64
+223 silly ADD node_modules/@img/colour
+224 silly ADD node_modules/sharp
+225 silly CHANGE node_modules/@qwen-code/qwen-code
+226 silly CHANGE node_modules/@qwen-code/audio-capture
+227 warn install-scripts 1 package had install scripts blocked because they are not covered by allowScripts:
+227 warn install-scripts   @qwen-code/audio-capture@0.21.13 (install: node install.js)
+227 warn install-scripts
+227 warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+228 verbose cwd /home/cuphana7/kobi-package/npm-seed
+229 verbose os Linux 6.6.143+
+230 verbose node v24.19.0
+231 verbose npm  v12.0.2
+232 verbose exit 0
+233 info ok

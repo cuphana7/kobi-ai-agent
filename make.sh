@@ -585,7 +585,32 @@ function Test-KobiApiKey {
     }
 }
 
+# 현재 설정된 API 키와 연결 대상(단말/서버)을 콘솔에 표시한다.
+function Show-KobiApiKey {
+    param([string]$ConfigPath)
+
+    if (-not (Test-Path $ConfigPath)) { return }
+    try {
+        $Config = Get-Content -Path $ConfigPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    } catch { return }
+
+    $Providers = $Config.modelProviders.openai
+    if (-not $Providers -or $Providers.Count -eq 0) { return }
+
+    $EnvKeyName = $Providers[0].envKey
+    $CurrentKey = $Config.env.$EnvKeyName
+
+    Write-Host ""
+    Write-Host "설정된 API 키: $CurrentKey" -ForegroundColor Cyan
+    Write-Host "  (envKey: $EnvKeyName)" -ForegroundColor DarkGray
+    foreach ($Provider in $Providers) {
+        Write-Host ("  - {0}: {1}" -f $Provider.name, $Provider.baseUrl) -ForegroundColor DarkGray
+    }
+    Write-Host ""
+}
+
 Test-KobiApiKey -ConfigPath $ConfigPath
+Show-KobiApiKey -ConfigPath $ConfigPath
 
 $AppendPrompt = @"
 반드시 한국어로 답변한다.
