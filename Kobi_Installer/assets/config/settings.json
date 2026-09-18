@@ -23,7 +23,7 @@
   },
   "env": {
     "VLLM_API_KEY": "not-needed",
-    "QWEN_CUSTOM_API_KEY_OPENAI_HTTP_10_210_169_48_8103_V1_8517E24EE066": "df"
+    "QWEN_CUSTOM_API_KEY_OPENAI_HTTP_10_210_169_48_8103_V1_8517E24EE066": ""
   },
   "security": {
     "auth": {
