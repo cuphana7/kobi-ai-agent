@@ -26,7 +26,7 @@
   - 현재 작업 디렉터리
   - 사용한 검색 패턴
   - .gitignore 또는 .qwenignore 영향 가능성
-  - 사용자가 직접 확인할 PowerShell 명령어
+  - 사용자가 직접 확인할 셸 명령어(운영체제에 맞는 예: PowerShell 또는 bash)
 - 전체 프로젝트 분석 전에는 먼저 pom.xml, build.gradle, src 디렉터리 존재 여부를 확인한다.
 
 ## 보안 지침
