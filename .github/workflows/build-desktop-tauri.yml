@@ -131,6 +131,30 @@ jobs:
             console.log('replaced ' + changed + ' occurrence(s) of \"Qwen Code\" in ' + p);
           "
 
+      - name: Rebrand Cargo.toml description (embedded in the compiled exe's File Description)
+        # tauri-build reads Cargo.toml's [package] description into the
+        # compiled binary's own PE VersionInfo resource (visible via right
+        # click > Properties > Details on qwen-code-desktop.exe) - this is
+        # separate from tauri.conf.json's bundle.shortDescription (used for
+        # the NSIS installer wrapper's own metadata, patched in the
+        # WebView2 step above). Verified by extracting a built installer
+        # with `7z x` and grepping the inner exe: this was the one
+        # remaining visible "Qwen Code" string after the main.rs fix.
+        working-directory: qwen-code/packages/desktop-shell/src-tauri
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = 'Cargo.toml';
+            let text = fs.readFileSync(p, 'utf8');
+            const before = text;
+            text = text.replace(
+              /^description = \".*\"\$/m,
+              'description = \"Kobi (KB AI Assistant) desktop shell\"'
+            );
+            fs.writeFileSync(p, text);
+            console.log(text === before ? 'no change (pattern not found!)' : 'description updated');
+          "
+
       - name: Switch WebView2 install mode to offline; drop Qwen Code from shortDescription
         # offlineInstaller embeds the full WebView2 bootstrapper (+~127MB)
         # so target PCs need no internet at install time. fixedRuntime
