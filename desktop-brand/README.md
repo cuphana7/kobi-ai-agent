@@ -1,9 +1,16 @@
 # desktop-brand — Kobi 리브랜딩 Desktop(GUI) 빌드
 
 kobi CLI와 함께 배포할 **"Kobi" 브랜딩 데스크톱 GUI**를 만드는 도구 모음이다.
-Qwen Code Desktop(공식 Electron 앱, Apache-2.0)을 포크·리브랜딩하여
 `Kobi-Desktop-x64.exe`(Windows NSIS 설치본)를 생성한다. 상표 정책(TRADEMARK.md)도
 포크 시 다른 이름 사용을 요구하므로 "Kobi" 리브랜딩은 정책에 부합한다.
+
+> **현재 빌드 방법(2026-09-21~)**: upstream이 Electron(`packages/desktop`)을
+> Tauri 2 셸(`packages/desktop-shell`)로 교체했다. 지금은 아래 이 파일에 설명된
+> Electron+Wine 경로가 아니라 **`.github/workflows/build-desktop-tauri.yml`**
+> (GitHub Actions `windows-latest`, `workflow_dispatch`로 수동 실행)로 빌드한다.
+> 실행 후 `Kobi-Desktop-x64.exe`/`.sha256` 아티팩트를 받아 `Kobi_Installer/assets/desktop/`에
+> 넣으면 된다. 배경·의사결정 과정은 `desktop-brand/TAURI_MIGRATION.md`(특히 §6-quater) 참고.
+> 이 파일의 나머지 내용(`build-desktop.sh` 등)은 구 Electron 라인 기준으로, 참고용으로 남겨둔다.
 
 ## 왜 별도 빌드가 필요한가
 공식 배포물은 "Qwen Code Desktop"으로 표기된다. 화면·설치물·아이콘까지 "Kobi"로

@@ -137,23 +137,20 @@ desktop-v0.3.0 태그는 2026-09-10 컷 → 그 시점 core CLI는 0.23.x일 수
 - [ ] 반입 대상 PC의 WebView2 탑재 여부 조사 → `webviewInstallMode` 결정
 
 ### Phase 1 — 신 빌드 스크립트 작성 (구 build-desktop.sh 대체)
-- [ ] `desktop-brand/build-desktop-tauri.sh` 신규 작성:
-  1. `git clone --branch desktop-v0.3.0` (또는 고정 커밋)
-  2. `brand.json` 생성 (§3) → `brand-create.mjs` 실행
-  3. `npm install` (root) + `npm install --workspaces=false` (desktop-shell)
-  4. `QWEN_CODE_ROOT=<0.24.0>` + `QWEN_DESKTOP_TARGET=x86_64-pc-windows-msvc`
-     `npm run build:runtime --workspaces=false`
-  5. `npx tauri build`  (Windows 호스트)
-  6. 산출물(`*_x64-setup.exe`) → `Kobi_Installer/assets/desktop/`로 복사 + `.sha256`
-- [ ] `tauri.conf.json`에 `webviewInstallMode=fixedRuntime` 주입 로직(폐쇄망 시)
-- [ ] 구 `build-desktop.sh`/`build-desktop-offline.sh`는 `legacy/`로 이동 or 삭제
+- [x] §6-quater 결정에 따라 셸 스크립트 대신 **`.github/workflows/build-desktop-tauri.yml`**
+      (GitHub Actions, `windows-latest`)로 구현 — 원래 계획한 6단계(clone → brand-create.mjs
+      → npm install → 빌드 → rename → sha256)를 CI 스텝으로 그대로 수행, 2026-09-21 검증 완료.
+      `QWEN_CODE_ROOT` 오버라이드는 불필요(§6-quater: `desktop-v0.24.0` 태그 자체가
+      CLI 0.24.0과 일치).
+- [x] `webviewInstallMode`: `offlineInstaller`로 주입(워크플로 내 스텝). `fixedRuntime`은
+      보류(§6-quater 참고).
+- [ ] 구 `build-desktop.sh`/`build-desktop-offline.sh`는 그대로 보존(Electron 재사용
+      가능성 대비) — 삭제/이동은 보류.
 
 ### Phase 2 — 패키징 연동
-- [ ] `make.sh`의 desktop 조립부 점검:
-      산출물 파일명이 `Kobi-Desktop-x64.exe` 규약과 일치하는지
-      (Tauri 기본은 `Kobi-Desktop_0.3.0_x64-setup.exe` → rename 필요할 수 있음)
-- [ ] `.gitignore`의 exe 예외 규칙 유지 확인
-- [ ] `windows-gui` 플로우가 신 산출물 존재 검사와 호환되는지
+- [x] 산출물 파일명을 워크플로에서 `Kobi-Desktop-x64.exe`로 rename하는 스텝을 넣어
+      `make.sh`/`Install-Kobi.ps1`/`.gitignore`를 전혀 안 건드려도 되게 함.
+- [ ] `windows-gui` 플로우가 신 산출물과 실제로 맞물리는지는 아직 미검증(아래 Phase 3와 동일 사유).
 
 ### Phase 3 — 검증
 - [ ] 실제 Windows(가능하면 폐쇄망 유사 이미지)에서 설치·실행
@@ -170,7 +167,7 @@ desktop-v0.3.0 태그는 2026-09-10 컷 → 그 시점 core CLI는 0.23.x일 수
 
 ---
 
-## 6-bis. 결정 사항 (2026-09-17 확정)
+## 6-bis. 결정 사항 (2026-09-17 확정) — ⚠️ 2026-09-21 §6-quater로 대체됨
 
 - **빌드 호스트: Windows 빌드 PC** (사내). 단 **일부 사이트 접근 제한/사내 TLS 인터셉트
   가능성** → §6-ter의 네트워크 프리플라이트가 이 계획의 최대 실무 리스크.
@@ -179,6 +176,31 @@ desktop-v0.3.0 태그는 2026-09-10 컷 → 그 시점 core CLI는 0.23.x일 수
 - 런타임 0.24.0 고정: (A) `QWEN_CODE_ROOT` 오버라이드 채택.
 - 자동업데이트: `updaterEndpoints=[]` 유지.
 - 셸 버전: `desktop-v0.3.0` 태그 고정.
+
+## 6-quater. 결정 번복 — public GitHub Actions 채택 (2026-09-21)
+
+**빌드 호스트를 사내 Windows PC → `windows-latest` GitHub Actions(공개 저장소
+`cuphana7/kobi-ai-agent`)로 변경한다.** §6-bis의 "사내 PC" 결정을 번복.
+
+- **검증 완료**: `.github/workflows/build-desktop-tauri.yml`로 end-to-end 2회 빌드
+  시도 끝에 실제 `Kobi-Desktop-x64.exe` 산출 확인(첫 시도는 brand.json JSON 이스케이프
+  버그, 두 번째는 `shell: bash`에서 MSYS `tar`가 Windows 기본 tar.exe를 가리는 버그로
+  실패 → 둘 다 수정 후 3회차 성공, 총 25분). 상세는 워크플로 파일 주석 참고.
+- **셸 태그를 `desktop-v0.3.0` → `desktop-v0.24.0`으로 변경**: `desktop-v0.24.0`
+  태그의 `packages/cli` 자체 버전이 정확히 0.24.0이라, §5에서 논의한
+  `QWEN_CODE_ROOT` 오버라이드(셸 v0.3.0 + 런타임만 0.24.0로 분리 지정) 없이도
+  "셸 버전 = 런타임 CLI 버전"이 자연히 일치한다. 현재 `Kobi_Installer/assets/pkg`의
+  pinned CLI(0.24.0)와도 그대로 맞음 — CLI를 올릴 때마다 매칭되는 `desktop-v*` 태그를
+  다시 확인할 것.
+- **WebView2**: `offlineInstaller`로 결정(§4.3의 두 옵션 중 더 가벼운 쪽, +127MB).
+  `fixedRuntime`(+180MB)은 대상 이미지에 WebView2가 전혀 없다고 확인되면 전환 검토.
+- 자동업데이트: 기존 결정대로 `updaterEndpoints=[]` 유지(브랜디드 빌드가 공식
+  업데이트 피드를 절대 폴링하지 않음).
+- **공개 저장소 노출 트레이드오프**: 이 방식은 빌드 로그와 아티팩트가 (저장소가
+  public이므로) 일정 기간 외부에 노출된다 — `kbcard.com` 도메인 문자열, "Kobi"
+  브랜딩/로고 정도가 노출 범위. 민감도는 낮다고 판단해 승인됨.
+- §6-ter(네트워크 프리플라이트)·`preflight-network.sh`·`prefetch-offline-bundle.sh`는
+  **사내 PC 경로를 다시 쓰게 될 경우를 위한 참고 자료로 보존**한다(현재는 미사용).
 
 ## 6-ter. 네트워크 제약 Windows 빌드 — 외부 다운로드 지점 (최우선 점검)
 
