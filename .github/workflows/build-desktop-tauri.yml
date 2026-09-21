@@ -109,6 +109,28 @@ jobs:
             --shell-root "$GITHUB_WORKSPACE/qwen-code/packages/desktop-shell" \
             --config "$GITHUB_WORKSPACE/brand.json"
 
+      - name: Rebrand window title and native dialog strings (Rust source)
+        # brand-create.mjs only patches tauri.conf.json and the bootstrap/
+        # loading screen. The actual OS window title and native dialog
+        # text (update prompt, workspace picker, etc.) are Rust string
+        # literals in src-tauri/src/main.rs that it never touches, so the
+        # built app's title bar stayed "Qwen Code" even after branding.
+        # Plain text substitution (longer phrase first so "Qwen Code
+        # Desktop" doesn't leave a stray "Desktop" behind).
+        working-directory: qwen-code/packages/desktop-shell/src-tauri/src
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = 'main.rs';
+            let text = fs.readFileSync(p, 'utf8');
+            const before = text;
+            text = text.split('Qwen Code Desktop').join('Kobi');
+            text = text.split('Qwen Code').join('Kobi');
+            fs.writeFileSync(p, text);
+            const changed = (before.match(/Qwen Code/g) || []).length;
+            console.log('replaced ' + changed + ' occurrence(s) of \"Qwen Code\" in ' + p);
+          "
+
       - name: Switch WebView2 install mode to offline (air-gapped target PCs)
         # offlineInstaller embeds the full WebView2 bootstrapper (+~127MB)
         # so target PCs need no internet at install time. fixedRuntime
