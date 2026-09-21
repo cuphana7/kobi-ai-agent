@@ -131,13 +131,18 @@ jobs:
             console.log('replaced ' + changed + ' occurrence(s) of \"Qwen Code\" in ' + p);
           "
 
-      - name: Switch WebView2 install mode to offline (air-gapped target PCs)
+      - name: Switch WebView2 install mode to offline; drop Qwen Code from shortDescription
         # offlineInstaller embeds the full WebView2 bootstrapper (+~127MB)
         # so target PCs need no internet at install time. fixedRuntime
         # (+~180MB, needs a separately downloaded runtime path) is the
         # heavier alternative discussed in TAURI_MIGRATION.md; not needed
         # unless a target image lacks WebView2 entirely and offlineInstaller
         # turns out insufficient.
+        #
+        # brand-create.mjs itself sets shortDescription to "Kobi desktop
+        # shell for the Qwen Code Web Shell" (attributing the underlying
+        # tech, not a bug) - the last visible "Qwen Code" string, shown in
+        # Windows' Programs and Features. Overwrite it fully Kobi-branded.
         working-directory: qwen-code/packages/desktop-shell/src-tauri
         run: |
           node -e "
@@ -145,8 +150,9 @@ jobs:
             const p = 'tauri.conf.json';
             const c = JSON.parse(fs.readFileSync(p, 'utf8'));
             c.bundle.windows.webviewInstallMode = { type: 'offlineInstaller', silent: true };
+            c.bundle.shortDescription = 'Kobi (KB AI Assistant) desktop shell';
             fs.writeFileSync(p, JSON.stringify(c, null, 2) + '\n');
-            console.log(JSON.stringify(c.bundle.windows, null, 2));
+            console.log(JSON.stringify({ windows: c.bundle.windows, shortDescription: c.bundle.shortDescription }, null, 2));
           "
 
       - name: Build CLI runtime + Tauri Windows installer
