@@ -50,11 +50,19 @@ jobs:
         with:
           path: kobi-package
 
-      - name: Checkout qwen-code ${{ inputs.qwen_desktop_tag }}
+      - name: Checkout qwen-code
+        # inputs.* is only populated on workflow_dispatch, not on push (the
+        # fallback trigger used while this workflow lives off the default
+        # branch — see the `on.push` comment). Without the `||` fallback
+        # here, ref resolves to '' and actions/checkout silently defaults
+        # to QwenLM/qwen-code's own default branch instead of the pinned
+        # tag — which is a moving, sometimes red target (caught this when
+        # a push-triggered run picked up a main HEAD with a TS build error
+        # unrelated to anything in this repo).
         uses: actions/checkout@v4
         with:
           repository: QwenLM/qwen-code
-          ref: ${{ inputs.qwen_desktop_tag }}
+          ref: ${{ inputs.qwen_desktop_tag || 'desktop-v0.24.0' }}
           path: qwen-code
 
       - name: Set up Node 22
