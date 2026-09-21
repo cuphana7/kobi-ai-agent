@@ -56,20 +56,29 @@ jobs:
         run: npm install --workspaces=false --no-audit --no-fund
 
       - name: Write Kobi brand config
+        # Build via Node + JSON.stringify (not a bash heredoc) so
+        # GITHUB_WORKSPACE's Windows-style backslashes end up correctly
+        # escaped inside the JSON string instead of producing invalid JSON.
         run: |
-          cat > brand.json <<EOF
-          {
-            "brandId": "kobi",
-            "logo": "$GITHUB_WORKSPACE/kobi-package/desktop-brand/icons/logo.png",
-            "appName": "Kobi",
-            "appId": "com.kbcard.kobi",
-            "website": "kbcard.com"
-          }
-          EOF
+          node -e "
+            const fs = require('path').join(process.cwd(), 'brand.json');
+            const ws = process.env.GITHUB_WORKSPACE;
+            const cfg = {
+              brandId: 'kobi',
+              logo: require('path').join(ws, 'kobi-package', 'desktop-brand', 'icons', 'logo.png'),
+              appName: 'Kobi',
+              appId: 'com.kbcard.kobi',
+              website: 'kbcard.com',
+            };
+            require('fs').writeFileSync(fs, JSON.stringify(cfg, null, 2) + '\n');
+            console.log('wrote ' + fs);
+            console.log(require('fs').readFileSync(fs, 'utf8'));
+          "
 
       - name: Brand desktop-shell as Kobi
         working-directory: qwen-code/packages/desktop-shell
         run: |
+          node --version
           node .agents/skills/desktop-brand-builder/scripts/brand-create.mjs \
             --shell-root "$GITHUB_WORKSPACE/qwen-code/packages/desktop-shell" \
             --config "$GITHUB_WORKSPACE/brand.json"
