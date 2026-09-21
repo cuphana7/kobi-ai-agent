@@ -1,0 +1,112 @@
+name: kobi-desktop-tauri-test
+
+# Exploratory build: does upstream QwenLM/qwen-code's Tauri desktop-shell
+# (desktop-v0.3.0) rebrand and build cleanly into a Windows installer on a
+# real Windows runner? This is a validation run, not a release pipeline.
+#
+# Triggered by push (no repo token available to call workflow_dispatch via
+# the API from the dev sandbox) — push to this branch to (re)run it, or use
+# "Run workflow" in the Actions UI once it exists on the default branch.
+on:
+  push:
+    branches: [ci/tauri-windows-test]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout kobi-package (brand assets)
+        uses: actions/checkout@v4
+        with:
+          path: kobi-package
+
+      - name: Checkout qwen-code desktop-v0.3.0
+        uses: actions/checkout@v4
+        with:
+          repository: QwenLM/qwen-code
+          ref: desktop-v0.3.0
+          path: qwen-code
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install qwen-code root deps (needed by CLI/web-shell build)
+        working-directory: qwen-code
+        run: npm install --no-audit --no-fund
+
+      - name: Install desktop-shell deps
+        working-directory: qwen-code/packages/desktop-shell
+        run: npm install --workspaces=false --no-audit --no-fund
+
+      - name: Write Kobi brand config
+        run: |
+          cat > brand.json <<EOF
+          {
+            "brandId": "kobi",
+            "logo": "$GITHUB_WORKSPACE/kobi-package/desktop-brand/icons/logo.png",
+            "appName": "Kobi",
+            "appId": "com.kbcard.kobi",
+            "website": "kbcard.com"
+          }
+          EOF
+
+      - name: Brand desktop-shell as Kobi
+        working-directory: qwen-code/packages/desktop-shell
+        run: |
+          node .agents/skills/desktop-brand-builder/scripts/brand-create.mjs \
+            --shell-root "$GITHUB_WORKSPACE/qwen-code/packages/desktop-shell" \
+            --config "$GITHUB_WORKSPACE/brand.json"
+
+      - name: Switch WebView2 install mode to offline (air-gapped target PCs)
+        working-directory: qwen-code/packages/desktop-shell/src-tauri
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = 'tauri.conf.json';
+            const c = JSON.parse(fs.readFileSync(p, 'utf8'));
+            c.bundle.windows.webviewInstallMode = { type: 'offlineInstaller', silent: true };
+            fs.writeFileSync(p, JSON.stringify(c, null, 2) + '\n');
+            console.log(JSON.stringify(c.bundle.windows, null, 2));
+          "
+
+      - name: Build CLI runtime + Tauri Windows installer
+        working-directory: qwen-code/packages/desktop-shell
+        run: npm run build
+
+      - name: Locate installer + checksum
+        id: locate
+        run: |
+          BUNDLE_DIR="qwen-code/packages/desktop-shell/src-tauri/target/release/bundle"
+          find "$BUNDLE_DIR" -maxdepth 3 -type f | sort
+          EXE=$(find "$BUNDLE_DIR/nsis" -maxdepth 1 -name "*.exe" | head -n1)
+          if [ -z "$EXE" ]; then echo "no .exe produced"; exit 1; fi
+          sha256sum "$EXE" | tee "$EXE.sha256"
+          echo "exe=$EXE" >> "$GITHUB_OUTPUT"
+
+      - name: Upload installer artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kobi-desktop-tauri-v0.3.0-windows
+          path: |
+            qwen-code/packages/desktop-shell/src-tauri/target/release/bundle/nsis/*
+            qwen-code/packages/desktop-shell/src-tauri/tauri.conf.json
+          if-no-files-found: warn
+          retention-days: 14
