@@ -23,6 +23,12 @@ on:
         description: "QwenLM/qwen-code tag to build (must match the CLI version pinned in Kobi_Installer/assets/pkg)"
         required: true
         default: "desktop-v0.24.0"
+  push:
+    # workflow_dispatch can't be triggered via UI/API until this file exists
+    # on the repo's default branch; push stays as the trigger for this
+    # non-default branch until feat/kobi-desktop-gui merges to main.
+    branches: [feat/kobi-desktop-gui]
+    paths: [.github/workflows/build-desktop-tauri.yml]
 
 permissions:
   contents: read
