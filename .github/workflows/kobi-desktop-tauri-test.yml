@@ -96,6 +96,12 @@ jobs:
           "
 
       - name: Build CLI runtime + Tauri Windows installer
+        # pwsh, not the job-default bash: under Git Bash, MSYS's own `tar`
+        # shadows Windows' native tar.exe on PATH and misparses `C:\...`
+        # as a remote-host `host:path` target ("Cannot connect to C:
+        # resolve failed") when prepare-runtime.js extracts the bundled
+        # Node zip. Windows' native shell keeps PATH clean of MSYS tools.
+        shell: pwsh
         working-directory: qwen-code/packages/desktop-shell
         run: npm run build
 
