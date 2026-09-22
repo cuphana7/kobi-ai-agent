@@ -1,6 +1,18 @@
 #!/bin/bash
 cd ~/kobi-package
 
+# 0. 인자 파싱: --cli-only 플래그가 있으면 스킬(jennifer-monitor/frism-cm/office-edit/
+#    project-bootstrap)과 Computer Use 드라이버를 제외한 코어 CLI 전용 배포판을 만든다.
+CLI_ONLY=0
+POSITIONAL_ARGS=()
+for arg in "$@"; do
+  if [ "$arg" == "--cli-only" ]; then
+    CLI_ONLY=1
+  else
+    POSITIONAL_ARGS+=("$arg")
+  fi
+done
+
 # 1. Qwen Code 모듈 최신버전 확인 및 업데이트 검사
 CURRENT_VERSION=$(grep '"@qwen-code/qwen-code"' npm-seed/package.json | head -n 1 | cut -d'"' -f4 | tr -d '^" ,')
 echo "=========================================================="
@@ -62,47 +74,61 @@ fi
 echo ""
 
 # 2. 버전 정보 생성 (인자값이 전달되면 해당 값을 사용하고, 없으면 연월일_시분 'YYYYMMDD_HHMM' 형식으로 자동 생성)
-VERSION=$1
+VERSION=${POSITIONAL_ARGS[0]}
 if [ -z "$VERSION" ]; then
   VERSION=$(date +%Y%m%d_%H%M)
 fi
 
-ZIP_NAME="Kobi_Installer_v${VERSION}.zip"
+if [ "$CLI_ONLY" -eq 1 ]; then
+  ZIP_NAME="Kobi_Installer_CLI_v${VERSION}.zip"
+else
+  ZIP_NAME="Kobi_Installer_v${VERSION}.zip"
+fi
 SHA_NAME="${ZIP_NAME}.sha256"
 
 echo "=========================================================="
-echo " Packaging Kobi Version: $VERSION"
+if [ "$CLI_ONLY" -eq 1 ]; then
+  echo " Packaging Kobi CLI-only Version: $VERSION (no skills, no Computer Use)"
+else
+  echo " Packaging Kobi Version: $VERSION"
+fi
 echo " Target File: $ZIP_NAME"
 echo "=========================================================="
 
-# 3. 스킬 자동 빌드 (최신 변경 사항을 .skill로 동기화)
-echo "----------------------------------------------------------"
-echo " Rebuilding jennifer-monitor.skill from jennifer-monitor/..."
-echo "----------------------------------------------------------"
-rm -f jennifer-monitor.skill Kobi_Installer/assets/jennifer-monitor.skill
-(cd jennifer-monitor && zip -rq ../jennifer-monitor.skill *)
-cp jennifer-monitor.skill Kobi_Installer/assets/jennifer-monitor.skill
+# 3. 스킬 자동 빌드 (최신 변경 사항을 .skill로 동기화) — CLI 전용 빌드에서는 건너뜀
+if [ "$CLI_ONLY" -eq 0 ]; then
+  echo "----------------------------------------------------------"
+  echo " Rebuilding jennifer-monitor.skill from jennifer-monitor/..."
+  echo "----------------------------------------------------------"
+  rm -f jennifer-monitor.skill Kobi_Installer/assets/jennifer-monitor.skill
+  (cd jennifer-monitor && zip -rq ../jennifer-monitor.skill *)
+  cp jennifer-monitor.skill Kobi_Installer/assets/jennifer-monitor.skill
 
-echo "----------------------------------------------------------"
-echo " Rebuilding project-bootstrap.skill from project-bootstrap/..."
-echo "----------------------------------------------------------"
-rm -f project-bootstrap.skill Kobi_Installer/assets/project-bootstrap.skill
-(cd project-bootstrap && zip -rq ../project-bootstrap.skill *)
-cp project-bootstrap.skill Kobi_Installer/assets/project-bootstrap.skill
+  echo "----------------------------------------------------------"
+  echo " Rebuilding project-bootstrap.skill from project-bootstrap/..."
+  echo "----------------------------------------------------------"
+  rm -f project-bootstrap.skill Kobi_Installer/assets/project-bootstrap.skill
+  (cd project-bootstrap && zip -rq ../project-bootstrap.skill *)
+  cp project-bootstrap.skill Kobi_Installer/assets/project-bootstrap.skill
 
-echo "----------------------------------------------------------"
-echo " Rebuilding frism-cm.skill from frism-cm/..."
-echo "----------------------------------------------------------"
-rm -f frism-cm.skill Kobi_Installer/assets/frism-cm.skill
-(cd frism-cm && zip -rq ../frism-cm.skill *)
-cp frism-cm.skill Kobi_Installer/assets/frism-cm.skill
+  echo "----------------------------------------------------------"
+  echo " Rebuilding frism-cm.skill from frism-cm/..."
+  echo "----------------------------------------------------------"
+  rm -f frism-cm.skill Kobi_Installer/assets/frism-cm.skill
+  (cd frism-cm && zip -rq ../frism-cm.skill *)
+  cp frism-cm.skill Kobi_Installer/assets/frism-cm.skill
 
-echo "----------------------------------------------------------"
-echo " Rebuilding office-edit.skill from office-edit/..."
-echo "----------------------------------------------------------"
-rm -f office-edit.skill Kobi_Installer/assets/office-edit.skill
-(cd office-edit && zip -rq ../office-edit.skill *)
-cp office-edit.skill Kobi_Installer/assets/office-edit.skill
+  echo "----------------------------------------------------------"
+  echo " Rebuilding office-edit.skill from office-edit/..."
+  echo "----------------------------------------------------------"
+  rm -f office-edit.skill Kobi_Installer/assets/office-edit.skill
+  (cd office-edit && zip -rq ../office-edit.skill *)
+  cp office-edit.skill Kobi_Installer/assets/office-edit.skill
+else
+  echo "----------------------------------------------------------"
+  echo " Skipping skill builds (--cli-only)"
+  echo "----------------------------------------------------------"
+fi
 
 # 4. Kobi_Runtime 빌드 준비
 echo "----------------------------------------------------------"
@@ -175,9 +201,23 @@ if [ ! -f "$QWEN_CLI_ENTRY" ]; then
 fi
 
 # (3) 설정 파일 및 지침 파일 복사
-echo "Copying config files into Kobi_Runtime..."
-cp Kobi_Installer/assets/config/settings.json "$RUNTIME_DIR/config/"
-cp Kobi_Installer/assets/config/QWEN.md "$RUNTIME_DIR/config/"
+# CLI 전용 빌드는 Computer Use가 비활성화된 settings.cli-only.json과
+# 관련 지침이 빠진 QWEN.cli-only.md를 사용한다 (실제 드라이버가 포함되지 않으므로).
+if [ "$CLI_ONLY" -eq 1 ]; then
+  echo "Copying CLI-only config files into Kobi_Runtime..."
+  CLI_SETTINGS="Kobi_Installer/assets/config/settings.cli-only.json"
+  CLI_QWEN_MD="Kobi_Installer/assets/config/QWEN.cli-only.md"
+  if [ ! -f "$CLI_SETTINGS" ] || [ ! -f "$CLI_QWEN_MD" ]; then
+    echo "Error: CLI-only config files not found ($CLI_SETTINGS / $CLI_QWEN_MD)."
+    exit 1
+  fi
+  cp "$CLI_SETTINGS" "$RUNTIME_DIR/config/settings.json"
+  cp "$CLI_QWEN_MD" "$RUNTIME_DIR/config/QWEN.md"
+else
+  echo "Copying config files into Kobi_Runtime..."
+  cp Kobi_Installer/assets/config/settings.json "$RUNTIME_DIR/config/"
+  cp Kobi_Installer/assets/config/QWEN.md "$RUNTIME_DIR/config/"
+fi
 
 # (4) bin/ 디렉터리에 실행 스크립트 작성
 echo "Generating execution scripts (kobi.cmd, kobi.ps1) in bin..."
@@ -288,16 +328,19 @@ cp Kobi_Installer/Install-Kobi.ps1 "$DIST_DIR/Kobi_Installer/"
 cp Kobi_Installer/Uninstall-Kobi.cmd "$DIST_DIR/Kobi_Installer/"
 cp Kobi_Installer/Uninstall-Kobi.ps1 "$DIST_DIR/Kobi_Installer/"
 
-# 필수 assets 복사
+# 필수 assets 복사 (CLI 전용 빌드는 스킬/Computer Use 자산을 비워둔다 —
+# Install-Kobi.ps1이 각 자산을 Test-Path로 확인 후 없으면 자동으로 건너뛴다)
 mkdir -p "$DIST_DIR/Kobi_Installer/assets"
-cp Kobi_Installer/assets/jennifer-monitor.skill "$DIST_DIR/Kobi_Installer/assets/"
-cp Kobi_Installer/assets/project-bootstrap.skill "$DIST_DIR/Kobi_Installer/assets/"
-cp Kobi_Installer/assets/frism-cm.skill "$DIST_DIR/Kobi_Installer/assets/"
-cp Kobi_Installer/assets/office-edit.skill "$DIST_DIR/Kobi_Installer/assets/"
+if [ "$CLI_ONLY" -eq 0 ]; then
+  cp Kobi_Installer/assets/jennifer-monitor.skill "$DIST_DIR/Kobi_Installer/assets/"
+  cp Kobi_Installer/assets/project-bootstrap.skill "$DIST_DIR/Kobi_Installer/assets/"
+  cp Kobi_Installer/assets/frism-cm.skill "$DIST_DIR/Kobi_Installer/assets/"
+  cp Kobi_Installer/assets/office-edit.skill "$DIST_DIR/Kobi_Installer/assets/"
 
-# Computer Use(화면 읽기 전용) 드라이버 자산 복사
-mkdir -p "$DIST_DIR/Kobi_Installer/assets/computer-use"
-cp Kobi_Installer/assets/computer-use/cua-driver-rs-0.5.2-windows-x86_64.zip "$DIST_DIR/Kobi_Installer/assets/computer-use/"
+  # Computer Use(화면 읽기 전용) 드라이버 자산 복사
+  mkdir -p "$DIST_DIR/Kobi_Installer/assets/computer-use"
+  cp Kobi_Installer/assets/computer-use/cua-driver-rs-0.5.2-windows-x86_64.zip "$DIST_DIR/Kobi_Installer/assets/computer-use/"
+fi
 
 # Kobi_Runtime 복사
 cp -r "$RUNTIME_DIR" "$DIST_DIR/Kobi_Installer/"
@@ -317,7 +360,11 @@ rm -rf "$DIST_DIR"
 rm -rf "$RUNTIME_DIR"
 
 echo "=========================================================="
-echo " Packaging completed successfully!"
+if [ "$CLI_ONLY" -eq 1 ]; then
+  echo " CLI-only packaging completed successfully!"
+else
+  echo " Packaging completed successfully!"
+fi
 echo " Result Files:"
 ls -lh "$ZIP_NAME" "$SHA_NAME"
 echo "=========================================================="

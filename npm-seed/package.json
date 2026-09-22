@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "@qwen-code/qwen-code": "^0.20.0"
+    "@qwen-code/qwen-code": "^0.24.3"
   }
 }

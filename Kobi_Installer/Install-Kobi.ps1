@@ -42,7 +42,7 @@ Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
 
 # 2. 사내 환경설정 파일 및 제니퍼 모니터링 스킬 배포
 Write-Host ""
-Write-Host "[2/3] 사용자 설정, 모니터링 스킬 및 Computer Use 드라이버 배포"
+Write-Host "[2/3] 사용자 설정 배포 및 확장 기능(스킬 · Computer Use) 설치"
 New-Item -ItemType Directory -Force -Path $UserQwenRoot | Out-Null
 
 $SourceQwenMd = Join-Path $InstallRoot "config\QWEN.md"
@@ -62,18 +62,17 @@ if (Test-Path $SourceQwenMd) {
     )
 }
 
-# 제니퍼 APM Monitoring Skill 자동 설치 및 압축 해제
 $SkillsDir = Join-Path $UserQwenRoot "skills"
-$TargetSkillDir = Join-Path $SkillsDir "jennifer-monitor"
-
-if (Test-Path $TargetSkillDir) {
-    Remove-Item $TargetSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-}
-New-Item -ItemType Directory -Force -Path $TargetSkillDir | Out-Null
-
 $TarExe = Join-Path $env:SystemRoot "System32\tar.exe"
+
+# 제니퍼 APM Monitoring Skill 자동 설치 및 압축 해제
+$TargetSkillDir = Join-Path $SkillsDir "jennifer-monitor"
 $SourceSkill = Join-Path $InstallerRoot "assets\jennifer-monitor.skill"
 if (Test-Path $SourceSkill) {
+    if (Test-Path $TargetSkillDir) {
+        Remove-Item $TargetSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+    }
+    New-Item -ItemType Directory -Force -Path $TargetSkillDir | Out-Null
     $TempZip = Join-Path $env:TEMP "jennifer_monitor_temp.zip"
     Copy-Item $SourceSkill $TempZip -Force
     if (Test-Path $TarExe) {
@@ -83,18 +82,18 @@ if (Test-Path $SourceSkill) {
     }
     Remove-Item $TempZip -Force
     Write-Host "제니퍼 APM 모니터링 스킬이 성공적으로 추가되었습니다."
+} else {
+    Write-Host "안내: 제니퍼 APM 모니터링 스킬 자산이 없어 설치를 건너뜁니다." -ForegroundColor Yellow
 }
 
 # 프로젝트 부트스트랩 스킬 자동 설치 및 압축 해제
 $TargetBootstrapSkillDir = Join-Path $SkillsDir "project-bootstrap"
-
-if (Test-Path $TargetBootstrapSkillDir) {
-    Remove-Item $TargetBootstrapSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-}
-New-Item -ItemType Directory -Force -Path $TargetBootstrapSkillDir | Out-Null
-
 $SourceBootstrapSkill = Join-Path $InstallerRoot "assets\project-bootstrap.skill"
 if (Test-Path $SourceBootstrapSkill) {
+    if (Test-Path $TargetBootstrapSkillDir) {
+        Remove-Item $TargetBootstrapSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+    }
+    New-Item -ItemType Directory -Force -Path $TargetBootstrapSkillDir | Out-Null
     $TempZip = Join-Path $env:TEMP "project_bootstrap_temp.zip"
     Copy-Item $SourceBootstrapSkill $TempZip -Force
     if (Test-Path $TarExe) {
@@ -104,18 +103,18 @@ if (Test-Path $SourceBootstrapSkill) {
     }
     Remove-Item $TempZip -Force
     Write-Host "프로젝트 부트스트랩 스킬이 성공적으로 추가되었습니다."
+} else {
+    Write-Host "안내: 프로젝트 부트스트랩 스킬 자산이 없어 설치를 건너뜁니다." -ForegroundColor Yellow
 }
 
 # Frism CM 연동 스킬 자동 설치 및 압축 해제
 $TargetFrismCmSkillDir = Join-Path $SkillsDir "frism-cm"
-
-if (Test-Path $TargetFrismCmSkillDir) {
-    Remove-Item $TargetFrismCmSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-}
-New-Item -ItemType Directory -Force -Path $TargetFrismCmSkillDir | Out-Null
-
 $SourceFrismCmSkill = Join-Path $InstallerRoot "assets\frism-cm.skill"
 if (Test-Path $SourceFrismCmSkill) {
+    if (Test-Path $TargetFrismCmSkillDir) {
+        Remove-Item $TargetFrismCmSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+    }
+    New-Item -ItemType Directory -Force -Path $TargetFrismCmSkillDir | Out-Null
     $TempZip = Join-Path $env:TEMP "frism_cm_temp.zip"
     Copy-Item $SourceFrismCmSkill $TempZip -Force
     if (Test-Path $TarExe) {
@@ -125,18 +124,18 @@ if (Test-Path $SourceFrismCmSkill) {
     }
     Remove-Item $TempZip -Force
     Write-Host "Frism CM 연동 스킬이 성공적으로 추가되었습니다."
+} else {
+    Write-Host "안내: Frism CM 연동 스킬 자산이 없어 설치를 건너뜁니다." -ForegroundColor Yellow
 }
 
 # Office(Excel/Word) 편집 스킬 자동 설치 및 압축 해제
 $TargetOfficeEditSkillDir = Join-Path $SkillsDir "office-edit"
-
-if (Test-Path $TargetOfficeEditSkillDir) {
-    Remove-Item $TargetOfficeEditSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-}
-New-Item -ItemType Directory -Force -Path $TargetOfficeEditSkillDir | Out-Null
-
 $SourceOfficeEditSkill = Join-Path $InstallerRoot "assets\office-edit.skill"
 if (Test-Path $SourceOfficeEditSkill) {
+    if (Test-Path $TargetOfficeEditSkillDir) {
+        Remove-Item $TargetOfficeEditSkillDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+    }
+    New-Item -ItemType Directory -Force -Path $TargetOfficeEditSkillDir | Out-Null
     $TempZip = Join-Path $env:TEMP "office_edit_temp.zip"
     Copy-Item $SourceOfficeEditSkill $TempZip -Force
     if (Test-Path $TarExe) {
@@ -146,6 +145,8 @@ if (Test-Path $SourceOfficeEditSkill) {
     }
     Remove-Item $TempZip -Force
     Write-Host "Office(Excel/Word) 편집 스킬이 성공적으로 추가되었습니다."
+} else {
+    Write-Host "안내: Office(Excel/Word) 편집 스킬 자산이 없어 설치를 건너뜁니다." -ForegroundColor Yellow
 }
 
 # 한국어 출력 헬퍼 설정 파일 생성
