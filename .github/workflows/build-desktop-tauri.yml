@@ -1,0 +1,220 @@
+name: build-desktop-tauri
+
+# Builds the Kobi-branded Tauri desktop shell (upstream QwenLM/qwen-code
+# packages/desktop-shell) into a Windows NSIS installer on a GitHub-hosted
+# windows-latest runner, and uploads it as a workflow artifact for a
+# developer to download and drop into Kobi_Installer/assets/desktop/.
+#
+# Background: upstream replaced the old Electron desktop (packages/desktop)
+# with a Tauri 2 shell (packages/desktop-shell). Tauri's Windows target
+# needs an MSVC linker, so it must be built on an actual Windows host —
+# Linux+Wine (the old build-desktop.sh path) no longer applies. See
+# desktop-brand/TAURI_MIGRATION.md for the full writeup.
+#
+# desktop-brand/TAURI_MIGRATION.md originally chose an internal Windows
+# build PC over CI for this. That decision was reversed on 2026-09-21
+# after this workflow was validated end-to-end on windows-latest twice
+# (see the migration doc's decision log) — public GitHub Actions is now
+# the primary build path.
+on:
+  workflow_dispatch:
+    inputs:
+      qwen_desktop_tag:
+        description: "QwenLM/qwen-code tag to build (must match the CLI version pinned in Kobi_Installer/assets/pkg)"
+        required: true
+        default: "desktop-v0.24.0"
+  push:
+    # workflow_dispatch can't be triggered via UI/API until this file exists
+    # on the repo's default branch; push stays as the trigger for this
+    # non-default branch until feat/kobi-desktop-gui merges to main.
+    branches: [feat/kobi-desktop-gui]
+    paths: [.github/workflows/build-desktop-tauri.yml]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout kobi-package (brand assets)
+        uses: actions/checkout@v4
+        with:
+          path: kobi-package
+
+      - name: Checkout qwen-code
+        # inputs.* is only populated on workflow_dispatch, not on push (the
+        # fallback trigger used while this workflow lives off the default
+        # branch — see the `on.push` comment). Without the `||` fallback
+        # here, ref resolves to '' and actions/checkout silently defaults
+        # to QwenLM/qwen-code's own default branch instead of the pinned
+        # tag — which is a moving, sometimes red target (caught this when
+        # a push-triggered run picked up a main HEAD with a TS build error
+        # unrelated to anything in this repo).
+        uses: actions/checkout@v4
+        with:
+          repository: QwenLM/qwen-code
+          ref: ${{ inputs.qwen_desktop_tag || 'desktop-v0.24.0' }}
+          path: qwen-code
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install qwen-code root deps (needed by CLI/web-shell build)
+        working-directory: qwen-code
+        run: npm install --no-audit --no-fund
+
+      - name: Install desktop-shell deps
+        working-directory: qwen-code/packages/desktop-shell
+        run: npm install --workspaces=false --no-audit --no-fund
+
+      - name: Write Kobi brand config
+        # Built via Node + JSON.stringify (not a bash heredoc): GITHUB_WORKSPACE
+        # is a Windows-style path with backslashes on windows-latest, which
+        # breaks naive string interpolation into a JSON literal.
+        run: |
+          node -e "
+            const path = require('path');
+            const out = path.join(process.cwd(), 'brand.json');
+            const ws = process.env.GITHUB_WORKSPACE;
+            const cfg = {
+              brandId: 'kobi',
+              logo: path.join(ws, 'kobi-package', 'desktop-brand', 'icons', 'logo.png'),
+              appName: 'Kobi',
+              appId: 'com.kbcard.kobi',
+              website: 'https://www.kbcard.com',
+              artifactPrefix: 'Kobi-Desktop',
+            };
+            require('fs').writeFileSync(out, JSON.stringify(cfg, null, 2) + '\n');
+            console.log(require('fs').readFileSync(out, 'utf8'));
+          "
+
+      - name: Brand desktop-shell as Kobi
+        working-directory: qwen-code/packages/desktop-shell
+        run: |
+          node .agents/skills/desktop-brand-builder/scripts/brand-create.mjs \
+            --shell-root "$GITHUB_WORKSPACE/qwen-code/packages/desktop-shell" \
+            --config "$GITHUB_WORKSPACE/brand.json"
+
+      - name: Rebrand window title and native dialog strings (Rust source)
+        # brand-create.mjs only patches tauri.conf.json and the bootstrap/
+        # loading screen. The actual OS window title and native dialog
+        # text (update prompt, workspace picker, etc.) are Rust string
+        # literals in src-tauri/src/main.rs that it never touches, so the
+        # built app's title bar stayed "Qwen Code" even after branding.
+        # Plain text substitution (longer phrase first so "Qwen Code
+        # Desktop" doesn't leave a stray "Desktop" behind).
+        working-directory: qwen-code/packages/desktop-shell/src-tauri/src
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = 'main.rs';
+            let text = fs.readFileSync(p, 'utf8');
+            const before = text;
+            text = text.split('Qwen Code Desktop').join('Kobi');
+            text = text.split('Qwen Code').join('Kobi');
+            fs.writeFileSync(p, text);
+            const changed = (before.match(/Qwen Code/g) || []).length;
+            console.log('replaced ' + changed + ' occurrence(s) of \"Qwen Code\" in ' + p);
+          "
+
+      - name: Rebrand Cargo.toml description (embedded in the compiled exe's File Description)
+        # tauri-build reads Cargo.toml's [package] description into the
+        # compiled binary's own PE VersionInfo resource (visible via right
+        # click > Properties > Details on qwen-code-desktop.exe) - this is
+        # separate from tauri.conf.json's bundle.shortDescription (used for
+        # the NSIS installer wrapper's own metadata, patched in the
+        # WebView2 step above). Verified by extracting a built installer
+        # with `7z x` and grepping the inner exe: this was the one
+        # remaining visible "Qwen Code" string after the main.rs fix.
+        working-directory: qwen-code/packages/desktop-shell/src-tauri
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = 'Cargo.toml';
+            let text = fs.readFileSync(p, 'utf8');
+            const before = text;
+            text = text.replace(
+              /^description = \".*\"\$/m,
+              'description = \"Kobi (KB AI Assistant) desktop shell\"'
+            );
+            fs.writeFileSync(p, text);
+            console.log(text === before ? 'no change (pattern not found!)' : 'description updated');
+          "
+
+      - name: Switch WebView2 install mode to offline; drop Qwen Code from shortDescription
+        # offlineInstaller embeds the full WebView2 bootstrapper (+~127MB)
+        # so target PCs need no internet at install time. fixedRuntime
+        # (+~180MB, needs a separately downloaded runtime path) is the
+        # heavier alternative discussed in TAURI_MIGRATION.md; not needed
+        # unless a target image lacks WebView2 entirely and offlineInstaller
+        # turns out insufficient.
+        #
+        # brand-create.mjs itself sets shortDescription to "Kobi desktop
+        # shell for the Qwen Code Web Shell" (attributing the underlying
+        # tech, not a bug) - the last visible "Qwen Code" string, shown in
+        # Windows' Programs and Features. Overwrite it fully Kobi-branded.
+        working-directory: qwen-code/packages/desktop-shell/src-tauri
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = 'tauri.conf.json';
+            const c = JSON.parse(fs.readFileSync(p, 'utf8'));
+            c.bundle.windows.webviewInstallMode = { type: 'offlineInstaller', silent: true };
+            c.bundle.shortDescription = 'Kobi (KB AI Assistant) desktop shell';
+            fs.writeFileSync(p, JSON.stringify(c, null, 2) + '\n');
+            console.log(JSON.stringify({ windows: c.bundle.windows, shortDescription: c.bundle.shortDescription }, null, 2));
+          "
+
+      - name: Build CLI runtime + Tauri Windows installer
+        # pwsh, not the job-default bash: under Git Bash, MSYS's own `tar`
+        # shadows Windows' native tar.exe on PATH and misparses `C:\...`
+        # as a remote-host `host:path` target ("Cannot connect to C:
+        # resolve failed") when prepare-runtime.js extracts the bundled
+        # Node zip. Windows' native shell keeps PATH clean of MSYS tools.
+        shell: pwsh
+        working-directory: qwen-code/packages/desktop-shell
+        run: npm run build
+
+      - name: Rename installer to the Kobi-Desktop-x64.exe convention
+        # Tauri's own output naming is `<productName>_<version>_x64-setup.exe`
+        # (e.g. Kobi_0.0.1_x64-setup.exe). Existing tooling (make.sh,
+        # Install-Kobi.ps1, .gitignore) all glob/reference the fixed name
+        # Kobi-Desktop-x64.exe from the old Electron build, so rename here
+        # instead of touching every consumer.
+        id: locate
+        run: |
+          BUNDLE_DIR="qwen-code/packages/desktop-shell/src-tauri/target/release/bundle"
+          find "$BUNDLE_DIR" -maxdepth 3 -type f | sort
+          SRC=$(find "$BUNDLE_DIR/nsis" -maxdepth 1 -name "*.exe" | head -n1)
+          if [ -z "$SRC" ]; then echo "no .exe produced"; exit 1; fi
+          DEST_DIR="dist"
+          mkdir -p "$DEST_DIR"
+          DEST="$DEST_DIR/Kobi-Desktop-x64.exe"
+          cp "$SRC" "$DEST"
+          sha256sum "$DEST" | tee "$DEST.sha256"
+          echo "exe=$DEST" >> "$GITHUB_OUTPUT"
+
+      - name: Upload installer artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kobi-Desktop-x64
+          path: |
+            dist/Kobi-Desktop-x64.exe
+            dist/Kobi-Desktop-x64.exe.sha256
+          if-no-files-found: warn
+          retention-days: 30

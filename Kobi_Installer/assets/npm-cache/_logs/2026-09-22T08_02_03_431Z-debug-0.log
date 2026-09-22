@@ -1,0 +1,259 @@
+0 verbose cli /usr/bin/node /usr/bin/npm
+1 info using npm@10.8.2
+2 info using node@v20.20.2
+3 silly config load:file:/usr/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/cuphana7/kobi-package/npm-seed/.npmrc
+5 silly config load:file:/home/cuphana7/.npmrc
+6 silly config load:file:/usr/etc/npmrc
+7 verbose title npm install @qwen-code/qwen-code@0.24.3
+8 verbose argv "install" "@qwen-code/qwen-code@0.24.3" "--cache" "../Kobi_Installer/assets/npm-cache" "--no-audit" "--no-fund"
+9 verbose logfile logs-max:10 dir:/home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-09-22T08_02_03_431Z-
+10 verbose logfile /home/cuphana7/kobi-package/Kobi_Installer/assets/npm-cache/_logs/2026-09-22T08_02_03_431Z-debug-0.log
+11 silly packumentCache heap:2099511296 maxSize:524877824 maxEntrySize:262438912
+12 silly logfile done cleaning log files
+13 silly idealTree buildDeps
+14 silly fetch manifest @qwen-code/qwen-code@0.24.3
+15 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/npm 273ms
+17 http fetch GET 200 https://registry.npmjs.org/@qwen-code%2fqwen-code 547ms (cache miss)
+18 silly packumentCache full:https://registry.npmjs.org/@qwen-code%2fqwen-code set size:undefined disposed:false
+19 silly placeDep ROOT @qwen-code/qwen-code@0.24.3 REPLACE for:  want: 0.24.3
+20 warn EBADENGINE Unsupported engine {
+20 warn EBADENGINE   package: '@qwen-code/qwen-code@0.24.3',
+20 warn EBADENGINE   required: { node: '>=22.0.0' },
+20 warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }
+20 warn EBADENGINE }
+21 silly reify moves {}
+22 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-win32-x64-msvc
+23 silly reify mark deleted [
+23 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-win32-x64-msvc'
+23 silly reify ]
+24 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-win32-arm64-msvc
+25 silly reify mark deleted [
+25 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-win32-arm64-msvc'
+25 silly reify ]
+26 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-linux-arm64-gnu
+27 silly reify mark deleted [
+27 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-linux-arm64-gnu'
+27 silly reify ]
+28 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-darwin-x64
+29 silly reify mark deleted [
+29 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-darwin-x64'
+29 silly reify ]
+30 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-darwin-arm64
+31 silly reify mark deleted [
+31 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@teddyzhu/clipboard-darwin-arm64'
+31 silly reify ]
+32 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/audio-capture
+33 silly reify mark deleted [
+33 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@qwen-code/audio-capture'
+33 silly reify ]
+34 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/node-gyp-build
+35 silly reify mark deleted [
+35 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/node-gyp-build',
+35 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/node-gyp-build',
+35 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/node-gyp-build-optional',
+35 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/.bin/node-gyp-build-test'
+35 silly reify ]
+36 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-win32-x64
+37 silly reify mark deleted [
+37 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-win32-x64'
+37 silly reify ]
+38 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-win32-arm64
+39 silly reify mark deleted [
+39 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-win32-arm64'
+39 silly reify ]
+40 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-linux-arm64
+41 silly reify mark deleted [
+41 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-linux-arm64'
+41 silly reify ]
+42 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-darwin-x64
+43 silly reify mark deleted [
+43 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-darwin-x64'
+43 silly reify ]
+44 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-darwin-arm64
+45 silly reify mark deleted [
+45 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@lydell/node-pty-darwin-arm64'
+45 silly reify ]
+46 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-win32-x64
+47 silly reify mark deleted [
+47 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-win32-x64'
+47 silly reify ]
+48 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-win32-ia32
+49 silly reify mark deleted [
+49 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-win32-ia32'
+49 silly reify ]
+50 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-win32-arm64
+51 silly reify mark deleted [
+51 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-win32-arm64'
+51 silly reify ]
+52 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-webcontainers-wasm32
+53 silly reify mark deleted [
+53 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-webcontainers-wasm32'
+53 silly reify ]
+54 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linuxmusl-x64
+55 silly reify mark deleted [
+55 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linuxmusl-x64'
+55 silly reify ]
+56 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linuxmusl-arm64
+57 silly reify mark deleted [
+57 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linuxmusl-arm64'
+57 silly reify ]
+58 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-s390x
+59 silly reify mark deleted [
+59 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-s390x'
+59 silly reify ]
+60 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-riscv64
+61 silly reify mark deleted [
+61 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-riscv64'
+61 silly reify ]
+62 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-ppc64
+63 silly reify mark deleted [
+63 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-ppc64'
+63 silly reify ]
+64 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-arm64
+65 silly reify mark deleted [
+65 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-arm64'
+65 silly reify ]
+66 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-arm
+67 silly reify mark deleted [
+67 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-linux-arm'
+67 silly reify ]
+68 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linuxmusl-x64
+69 silly reify mark deleted [
+69 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linuxmusl-x64'
+69 silly reify ]
+70 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linuxmusl-arm64
+71 silly reify mark deleted [
+71 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linuxmusl-arm64'
+71 silly reify ]
+72 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-s390x
+73 silly reify mark deleted [
+73 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-s390x'
+73 silly reify ]
+74 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-riscv64
+75 silly reify mark deleted [
+75 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-riscv64'
+75 silly reify ]
+76 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-ppc64
+77 silly reify mark deleted [
+77 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-ppc64'
+77 silly reify ]
+78 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-arm64
+79 silly reify mark deleted [
+79 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-arm64'
+79 silly reify ]
+80 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-arm
+81 silly reify mark deleted [
+81 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-linux-arm'
+81 silly reify ]
+82 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-darwin-x64
+83 silly reify mark deleted [
+83 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-darwin-x64'
+83 silly reify ]
+84 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-darwin-arm64
+85 silly reify mark deleted [
+85 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-libvips-darwin-arm64'
+85 silly reify ]
+86 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-freebsd-wasm32
+87 silly reify mark deleted [
+87 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-freebsd-wasm32'
+87 silly reify ]
+88 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-darwin-x64
+89 silly reify mark deleted [
+89 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-darwin-x64'
+89 silly reify ]
+90 verbose reify failed optional dependency /home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-darwin-arm64
+91 silly reify mark deleted [
+91 silly reify   '/home/cuphana7/kobi-package/npm-seed/node_modules/@img/sharp-darwin-arm64'
+91 silly reify ]
+92 silly tarball no local data for @qwen-code/qwen-code@https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.24.3.tgz. Extracting by manifest.
+93 silly tarball no local data for tslib@https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz. Extracting by manifest.
+94 silly tarball no local data for sharp@https://registry.npmjs.org/sharp/-/sharp-0.35.4.tgz. Extracting by manifest.
+95 silly tarball no local data for semver@https://registry.npmjs.org/semver/-/semver-7.8.5.tgz. Extracting by manifest.
+96 silly tarball no local data for node-gyp-build@https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.8.4.tgz. Extracting by manifest.
+97 silly tarball no local data for detect-libc@https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz. Extracting by manifest.
+98 silly tarball no local data for @teddyzhu/clipboard-linux-x64-gnu@https://registry.npmjs.org/@teddyzhu/clipboard-linux-x64-gnu/-/clipboard-linux-x64-gnu-0.0.5.tgz. Extracting by manifest.
+99 silly tarball no local data for @teddyzhu/clipboard@https://registry.npmjs.org/@teddyzhu/clipboard/-/clipboard-0.0.5.tgz. Extracting by manifest.
+100 silly tarball no local data for @lydell/node-pty-linux-x64@https://registry.npmjs.org/@lydell/node-pty-linux-x64/-/node-pty-linux-x64-1.2.0-beta.10.tgz. Extracting by manifest.
+101 silly tarball no local data for @lydell/node-pty@https://registry.npmjs.org/@lydell/node-pty/-/node-pty-1.2.0-beta.10.tgz. Extracting by manifest.
+102 silly tarball no local data for @img/sharp-wasm32@https://registry.npmjs.org/@img/sharp-wasm32/-/sharp-wasm32-0.35.4.tgz. Extracting by manifest.
+103 silly tarball no local data for @img/sharp-linux-x64@https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.4.tgz. Extracting by manifest.
+104 silly tarball no local data for @img/sharp-libvips-linux-x64@https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.3.tgz. Extracting by manifest.
+105 silly tarball no local data for @img/colour@https://registry.npmjs.org/@img/colour/-/colour-1.1.0.tgz. Extracting by manifest.
+106 silly tarball no local data for @emnapi/runtime@https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.11.3.tgz. Extracting by manifest.
+107 http fetch GET 200 https://registry.npmjs.org/node-gyp-build/-/node-gyp-build-4.8.4.tgz 800ms (cache miss)
+108 http fetch GET 200 https://registry.npmjs.org/@lydell/node-pty/-/node-pty-1.2.0-beta.10.tgz 846ms (cache miss)
+109 http fetch GET 200 https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz 872ms (cache miss)
+110 http fetch GET 200 https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz 906ms (cache miss)
+111 http fetch GET 200 https://registry.npmjs.org/@img/colour/-/colour-1.1.0.tgz 932ms (cache miss)
+112 http fetch GET 200 https://registry.npmjs.org/@teddyzhu/clipboard/-/clipboard-0.0.5.tgz 956ms (cache miss)
+113 http fetch GET 200 https://registry.npmjs.org/@lydell/node-pty-linux-x64/-/node-pty-linux-x64-1.2.0-beta.10.tgz 1037ms (cache miss)
+114 http fetch GET 200 https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.11.3.tgz 1078ms (cache miss)
+115 http fetch GET 200 https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.4.tgz 1119ms (cache miss)
+116 http fetch GET 200 https://registry.npmjs.org/semver/-/semver-7.8.5.tgz 1147ms (cache miss)
+117 http fetch GET 200 https://registry.npmjs.org/sharp/-/sharp-0.35.4.tgz 1346ms (cache miss)
+118 http fetch GET 200 https://registry.npmjs.org/@teddyzhu/clipboard-linux-x64-gnu/-/clipboard-linux-x64-gnu-0.0.5.tgz 1342ms (cache miss)
+119 http fetch GET 200 https://registry.npmjs.org/@img/sharp-wasm32/-/sharp-wasm32-0.35.4.tgz 1821ms (cache miss)
+120 http fetch GET 200 https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.3.tgz 2223ms (cache miss)
+121 http fetch GET 200 https://registry.npmjs.org/@qwen-code/qwen-code/-/qwen-code-0.24.3.tgz 4867ms (cache miss)
+122 silly ADD node_modules/@qwen-code/qwen-code
+123 silly ADD node_modules/tslib
+124 silly ADD node_modules/sharp
+125 silly ADD node_modules/semver
+126 silly ADD
+127 silly ADD node_modules/detect-libc
+128 silly ADD
+129 silly ADD
+130 silly ADD node_modules/@teddyzhu/clipboard-linux-x64-gnu
+131 silly ADD
+132 silly ADD
+133 silly ADD
+134 silly ADD node_modules/@teddyzhu/clipboard
+135 silly ADD
+136 silly ADD
+137 silly ADD
+138 silly ADD node_modules/@lydell/node-pty-linux-x64
+139 silly ADD
+140 silly ADD
+141 silly ADD
+142 silly ADD node_modules/@lydell/node-pty
+143 silly ADD
+144 silly ADD
+145 silly ADD
+146 silly ADD
+147 silly ADD node_modules/@img/sharp-wasm32
+148 silly ADD
+149 silly ADD
+150 silly ADD node_modules/@img/sharp-linux-x64
+151 silly ADD
+152 silly ADD
+153 silly ADD
+154 silly ADD
+155 silly ADD
+156 silly ADD
+157 silly ADD
+158 silly ADD node_modules/@img/sharp-libvips-linux-x64
+159 silly ADD
+160 silly ADD
+161 silly ADD
+162 silly ADD
+163 silly ADD
+164 silly ADD
+165 silly ADD
+166 silly ADD
+167 silly ADD
+168 silly ADD
+169 silly ADD node_modules/@img/colour
+170 silly ADD node_modules/@emnapi/runtime
+171 verbose cwd /home/cuphana7/kobi-package/npm-seed
+172 verbose os Linux 7.0.0-1011-gcp
+173 verbose node v20.20.2
+174 verbose npm  v10.8.2
+175 notice
+175 notice New major version of npm available! 10.8.2 -> 12.0.2
+175 notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+175 notice To update run: npm install -g npm@12.0.2
+175 notice  { force: true, [Symbol(proc-log.meta)]: true }
+176 verbose exit 0
+177 info ok
