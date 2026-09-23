@@ -443,10 +443,10 @@ check_api_key() {
       echo "API 키가 저장되었습니다."
       return 0
     fi
-    # 인증 성공(2xx 등 응답 수신)이면 종료, 응답 자체가 없으면(000/네트워크 오류) 다음 baseUrl 시도
-    if [ -n "$code" ] && [ "$code" != "000" ]; then
-      return 0
-    fi
+    # 401이 아니면(통신 불가, 또는 이미 인증 통과) 이 baseUrl은 넘어가고 나머지도 계속 확인한다.
+    # 특정 단말에서는 통신이 안 되는 baseUrl이 방화벽/게이트웨이에 막혀 401이 아닌 다른
+    # 응답(200/403 등)으로 위장될 수 있으므로, 하나가 "성공"처럼 보여도 검사를 멈추지 않고
+    # 중요단말/업무단말 baseUrl을 전부 확인해야 실제로 통신되는 쪽의 401을 놓치지 않는다.
   done <<< "$urls"
 }
 
@@ -573,7 +573,9 @@ function Test-KobiApiKey {
             Invoke-WebRequest -Uri $ModelsUrl `
                 -Headers @{ "Authorization" = "Bearer $CurrentKey" } `
                 -Method Get -TimeoutSec 5 -UseBasicParsing | Out-Null
-            return
+            # 통신도 되고 인증도 통과한 baseUrl이지만, 다른 단말(baseUrl)이 방화벽/게이트웨이에
+            # 막혀 401이 아닌 다른 응답(200/403 등)으로 위장되는 경우가 있으므로 여기서 멈추지
+            # 않고 나머지 baseUrl(중요단말/업무단말)도 계속 확인한다.
         } catch {
             $StatusCode = $null
             if ($_.Exception.Response) {
