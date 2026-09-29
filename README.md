@@ -100,8 +100,6 @@ kobi-package/
    - **[3/3] kobi 실행 경로 등록** (`~/.local/bin/kobi` 심볼릭 링크 생성 및 필요 시 `~/.profile`·`~/.bashrc`에 PATH 반영)
 3. 버전 검증 결과가 출력되면 설치가 완료됩니다. **새 터미널을 열거나 `source ~/.profile`** 로 PATH를 반영한 뒤 `kobi`를 사용합니다.
 
-> ⚠️ 본 패키지는 허가된 사용자만 설치할 수 있도록 `install.sh` 상단의 `ALLOWED_USERS` 계정 목록으로 설치를 제한합니다. 리눅스 로그인 계정 기준이므로, 배포 관리자는 배포 전 실제 허용 계정으로 목록을 갱신해야 합니다.
-
 ---
 
 ## 5. 사용 가이드 (Usage)
@@ -246,6 +244,7 @@ KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본
 
 | 버전 | 변경 일자 | 변경 구분 | 상세 변경 내용 | 작업자 |
 | :--- | :--- | :--- | :--- | :--- |
+| **v20260923_0006** | 2026-09-23 | 보안 정책 변경 | - **설치 시 사번(사용자 계정) 허용 목록 검증 로직 제거** — `Install-Kobi.ps1`의 `$AllowedUsers` 및 `install.sh`의 `ALLOWED_USERS` 체크와 관련 오류 메시지를 완전히 삭제. 이제 허용 목록에 없는 계정에서도 설치가 차단되지 않음 — 배포 관리자 명시적 요청에 따른 변경 | Claude Sonnet 5 / 개발지원팀 |
 | **v20260923_0005** | 2026-09-23 | 버그 수정 | - **API 키 사전 점검 로직에서 업무단말 baseUrl이 건너뛰어지는 문제 수정** — `Test-KobiApiKey`(Windows `kobi.ps1`)/`check_api_key`(Linux `kobi`)가 baseUrl 목록(정보(중요)단말 → 업무단말) 중 하나에서 401이 아닌 응답(2xx/기타)을 받으면 그 즉시 검사를 종료했음. 업무단말 네트워크에서 정보(중요)단말 baseUrl(:443)이 방화벽/보안 게이트웨이에 의해 차단되며 401이 아닌 응답(예: 200/403 차단 페이지)으로 위장되면, 실제로 통신되고 키 입력이 필요한 업무단말 baseUrl(:8080)은 검사되지 않아 API 키 입력 프롬프트가 뜨지 않는 현상 발생<br>- 응답이 성공(2xx)으로 보이더라도 검사를 멈추지 않고 목록의 모든 baseUrl(중요단말/업무단말)을 끝까지 확인하도록 변경 — 어느 baseUrl이 실제로 통신되든 그 쪽에서 401을 받으면 즉시 키 입력을 받아 저장 | Claude Sonnet 5 / 개발지원팀 |
 | **v20260923_0004** | 2026-09-23 | CLI 전용 빌드 | - **Windows CLI 전용 패키지 빌드** (`NO_DESKTOP=1 ./make.sh windows`) — Kobi Desktop(GUI) 미포함, CLI + 5개 스킬 + Computer Use 구성<br>- Qwen Code 코어 모듈 **0.24.3** 유지(레지스트리 0.24.4 확인됐으나 비대화형 셸이라 자동 스킵)<br>- 이전 산출물(`Kobi_Installer_v20260922.zip`/`.sha256`) 정리 | Claude Sonnet 5 / 개발지원팀 |
 | **v20260922** | 2026-09-22 | 브랜치 통합 / 코어 업데이트 | - **`main`과 `feat/kobi-desktop-gui` 브랜치 병합** — 두 브랜치가 독립적으로 만든 CLI 트리밍 빌드 방식을 통합. `feat/kobi-desktop-gui`의 `TARGET`/`FLAVOR` + `NO_GIT`/`NO_SKILLS`/`NO_DESKTOP` 환경변수 체계(Linux/GUI 전용/스킬 번들 지원 포함)를 기준으로 채택<br>- **`NO_COMPUTER_USE=1` 환경변수 신규 추가** — Computer Use 드라이버 자산을 패키지에서 제외하고 `settings.json`의 `tools.computerUse`도 함께 비활성화(코어 CLI만 필요할 때: `NO_DESKTOP=1 NO_SKILLS=1 NO_COMPUTER_USE=1 ./make.sh windows`)<br>- **`Install-Kobi.ps1`의 `Install-KobiSkill` 헬퍼 함수에 "자산 없음 → 건너뜀" 안내 메시지 추가** — 기존엔 스킬 자산이 없어도 아무 메시지 없이 빈 스킬 폴더만 생성했던 문제를 수정(디렉터리 생성도 자산이 있을 때만 하도록 변경), Computer Use와 동일한 안내 패턴으로 통일<br>- Qwen Code 코어 모듈 **0.24.3**으로 통일(main 0.20.0, 브랜치 0.24.0에서 병합) 및 오프라인 캐시(`npm-cache`)/`node_modules`/`.tgz` 전체 재생성 | Claude Sonnet 5 / 개발지원팀 |
