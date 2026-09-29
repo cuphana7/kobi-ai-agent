@@ -43,22 +43,6 @@ function Write-Utf8File([string]$Path, [string]$Text, [switch]$WithBom) {
     )
 }
 
-# [보안 권한 제약] 허가된 PC 사용자 계정 검증
-$AllowedUsers = @("K121105", "K121086", "K122226", "K122518", "K122522", "K123624", "K123863")
-$CurrentUn    = $env:USERNAME
-
-if ($AllowedUsers -notcontains $CurrentUn) {
-    Write-Host ""
-    Write-Host "============================================================" -ForegroundColor Red
-    Write-Host " [오류] 설치 권한이 없는 PC 사용자 계정입니다." -ForegroundColor Red
-    Write-Host " 사용자 계정: $CurrentUn" -ForegroundColor Red
-    Write-Host "============================================================" -ForegroundColor Red
-    Write-Host " 본 패키지는 허가된 사용자만 설치할 수 있는 전용 배포판입니다." -ForegroundColor Yellow
-    Write-Host " 설치 권한 및 라이선스 요청은 사내 배포 관리자에게 문의하세요." -ForegroundColor Yellow
-    Write-Host ""
-    exit 1
-}
-
 Write-Host ""
 Write-Host "============================================================"
 Write-Host " KB AI Code Assistant 설치 프로그램 (오프라인 배포판)"
