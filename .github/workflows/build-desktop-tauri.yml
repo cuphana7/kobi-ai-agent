@@ -113,8 +113,24 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install qwen-code root deps (needed by CLI/web-shell build)
+        # This repo is a pnpm workspace (packageManager: pnpm@11.24.0,
+        # pnpm-lock.yaml committed, package-lock.json gitignored with a
+        # comment warning npm install shouldn't regenerate it) — but this
+        # step used plain `npm install` anyway, which ignores
+        # pnpm-lock.yaml and re-resolves every floating semver range
+        # against whatever the npm registry has *today*. That's what let
+        # newer @types/node/typescript versions silently drift in after
+        # this tag was cut, breaking `tsc --build` on Buffer/BlobPart
+        # generics in several unrelated channel packages (see the patch
+        # step above — kept as a defense-in-depth backstop even though
+        # this fix should make it a no-op). Installing from the frozen
+        # pnpm lockfile instead reproduces exactly what the tag's author
+        # tested, so it isn't exposed to registry drift at all. The root
+        # package.json's own "prepare"/"build" lifecycle scripts (which
+        # is what this step is actually here to trigger) run the same way
+        # under pnpm install as they did under npm install.
         working-directory: qwen-code
-        run: npm install --no-audit --no-fund
+        run: corepack pnpm install --frozen-lockfile
 
       - name: Install desktop-shell deps
         working-directory: qwen-code/packages/desktop-shell
