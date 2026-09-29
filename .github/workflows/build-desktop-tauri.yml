@@ -65,8 +65,8 @@ jobs:
           ref: ${{ inputs.qwen_desktop_tag || 'desktop-v0.24.0' }}
           path: qwen-code
 
-      - name: Patch known upstream Buffer/BlobPart type mismatch
-        # DaemonChannelBridge.ts wraps a Buffer in new Blob([...]) directly;
+      - name: Patch known upstream Buffer/BlobPart type mismatches
+        # Several channel packages wrap a Buffer in new Blob([...]) directly;
         # newer @types/node tightened BlobPart's ArrayBufferView typing so
         # this now fails tsc --build even though runtime behavior is
         # unaffected (Buffer already implements ArrayBufferView). This
@@ -74,21 +74,34 @@ jobs:
         # (workspace-wide `pnpm -r run build`) before the desktop-shell
         # build is ever reached — confirmed on both desktop-v0.24.5 and
         # desktop-v0.24.6, so it's dependency drift from npm install (not
-        # npm ci) re-resolving @types/node/typescript at build time,
-        # not something introduced by either tag.
-        working-directory: qwen-code/packages/channels/base/src
+        # npm ci) re-resolving @types/node/typescript at build time, not
+        # something introduced by either tag. Repo-wide search (excluding
+        # tests) found exactly these three call sites with a raw Buffer arg;
+        # every other `new Blob([...])` in the tree passes a string,
+        # Uint8Array, ArrayBuffer, or an already-cast value, none of which
+        # trigger this error.
+        working-directory: qwen-code
         run: |
           node -e "
             const fs = require('fs');
-            const p = 'DaemonChannelBridge.ts';
-            let text = fs.readFileSync(p, 'utf8');
-            const before = text;
-            text = text.replace(
-              'new Blob([decoded.bytes], {',
-              'new Blob([new Uint8Array(decoded.bytes)], {'
-            );
-            fs.writeFileSync(p, text);
-            console.log(text === before ? 'no change (pattern not found!)' : 'patched');
+            const fixes = [
+              ['packages/channels/base/src/DaemonChannelBridge.ts',
+               'new Blob([decoded.bytes], {',
+               'new Blob([new Uint8Array(decoded.bytes)], {'],
+              ['packages/channels/dingtalk/src/outbound-image.ts',
+               'new Blob([image.data], { type: image.mimeType }),',
+               'new Blob([new Uint8Array(image.data)], { type: image.mimeType }),'],
+              ['packages/channels/dingtalk/src/outbound-file.ts',
+               \"new Blob([file.data], { type: 'application/octet-stream' }),\",
+               \"new Blob([new Uint8Array(file.data)], { type: 'application/octet-stream' }),\"],
+            ];
+            for (const [p, from, to] of fixes) {
+              let text = fs.readFileSync(p, 'utf8');
+              const before = text;
+              text = text.replace(from, to);
+              fs.writeFileSync(p, text);
+              console.log(p + ': ' + (text === before ? 'no change (pattern not found!)' : 'patched'));
+            }
           "
 
       - name: Set up Node 22
