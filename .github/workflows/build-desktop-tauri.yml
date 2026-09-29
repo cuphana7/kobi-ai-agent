@@ -65,6 +65,32 @@ jobs:
           ref: ${{ inputs.qwen_desktop_tag || 'desktop-v0.24.0' }}
           path: qwen-code
 
+      - name: Patch known upstream Buffer/BlobPart type mismatch
+        # DaemonChannelBridge.ts wraps a Buffer in new Blob([...]) directly;
+        # newer @types/node tightened BlobPart's ArrayBufferView typing so
+        # this now fails tsc --build even though runtime behavior is
+        # unaffected (Buffer already implements ArrayBufferView). This
+        # breaks the root `npm install`'s prepare/build lifecycle script
+        # (workspace-wide `pnpm -r run build`) before the desktop-shell
+        # build is ever reached — confirmed on both desktop-v0.24.5 and
+        # desktop-v0.24.6, so it's dependency drift from npm install (not
+        # npm ci) re-resolving @types/node/typescript at build time,
+        # not something introduced by either tag.
+        working-directory: qwen-code/packages/channels/base/src
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = 'DaemonChannelBridge.ts';
+            let text = fs.readFileSync(p, 'utf8');
+            const before = text;
+            text = text.replace(
+              'new Blob([decoded.bytes], {',
+              'new Blob([new Uint8Array(decoded.bytes)], {'
+            );
+            fs.writeFileSync(p, text);
+            console.log(text === before ? 'no change (pattern not found!)' : 'patched');
+          "
+
       - name: Set up Node 22
         uses: actions/setup-node@v4
         with:
