@@ -2,7 +2,7 @@
 
 본 패키지는 사내 보안망(내부망) 환경의 Windows 개발 PC에서 외부 네트워크 연결 없이 **KB AI Assistant**(`kobi`)를 로컬에 설치하고 사용할 수 있도록 구성된 오프라인 전용 배포 패키지입니다.
 
-이 도구는 대규모 언어 모델(LLM)인 **Qwen3-Next-80B-A3B-Instruct** 기반의 사내 자체 API 서비스와 연동하여 개발자의 소스 코드 분석, 리팩토링, 장애 진단 및 개발 생산성 향상을 안전하고 효율적으로 지원합니다.
+이 도구는 대규모 언어 모델(LLM)인 **Qwen3-Coder-Next-FP8** 기반의 사내 자체 API 서비스와 연동하여 개발자의 소스 코드 분석, 리팩토링, 장애 진단 및 개발 생산성 향상을 안전하고 효율적으로 지원합니다.
 
 ---
 
@@ -192,7 +192,7 @@ CLI(`kobi`)에 더해, 터미널이 익숙하지 않은 사용자를 위한 **�
 
 - **드라이버 자산**: `Kobi_Installer/assets/computer-use/cua-driver-rs-0.5.2-windows-x86_64.zip`
 - **자동 배치**: 설치 스크립트 실행 시 SHA-256 체크섬을 검증한 뒤 홈 프로필(`~/.qwen/computer-use/`)에 압축을 해제합니다. 드라이버가 이미 해당 경로에 존재하면 Qwen Code는 외부망으로 추가 다운로드를 시도하지 않습니다.
-- **텍스트 기반 화면 읽기**: 연동된 사내 LLM(Qwen3-Next-80B-A3B-Instruct, vLLM 서빙)은 이미지(비전) 입력을 지원하지 않으므로, 스크린샷(PNG) 캡처 대신 `get_window_state`를 `mode: "ax"`로 호출해 화면 UI를 **Markdown 텍스트 트리**로 읽도록 `QWEN.md`에 지침이 내재화되어 있습니다.
+- **텍스트 기반 화면 읽기**: 연동된 사내 LLM(Qwen3-Coder-Next-FP8, vLLM 서빙)은 이미지(비전) 입력을 지원하지 않으므로, 스크린샷(PNG) 캡처 대신 `get_window_state`를 `mode: "ax"`로 호출해 화면 UI를 **Markdown 텍스트 트리**로 읽도록 `QWEN.md`에 지침이 내재화되어 있습니다.
 - **조작 기능 차단**: `settings.json`의 `permissions.deny`에서 `click`, `double_click`, `drag`, `type_text`, `press_key`, `hotkey`, `scroll`, `launch_app`, `kill_app` 등 PC를 직접 조작하는 모든 Computer Use 툴을 차단합니다. `list_windows`, `list_apps`, `get_accessibility_tree`, `get_screen_size` 등 읽기 전용 조회 툴만 허용됩니다.
 - **민감정보 인용 정책**: 본 배포본은 내부망 전용 단일 사용자 PC(실제 사용자 본인만 접근 가능한 업무 PC)에서 구동됨을 전제로 합니다. 이에 따라 메신저 쪽지, 알림 팝업 등 **개인 알림/메시지 내용**은 화면에 보이는 그대로 인용하여 분석을 보조합니다. 다만 인증서, 비밀번호, API 키, OTP/인증코드 등 **자격증명 정보**는 화면에서 조회되더라도 원문 그대로 인용하지 않으며 마스킹하거나 존재 여부만 언급합니다. (`QWEN.md`에 지침 내재화)
 - **개별 승인 필수**: 차단되지 않은 읽기 전용 툴도 Qwen Code의 기본 정책에 따라 호출 시마다 사용자 승인(Approval) 대화상자가 노출됩니다.
@@ -255,6 +255,7 @@ KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본
 
 | 버전 | 변경 일자 | 변경 구분 | 상세 변경 내용 | 작업자 |
 | :--- | :--- | :--- | :--- | :--- |
+| **v20261015_0002** | 2026-10-15 | 연동 모델 변경 | - 사내 vLLM 연동 모델을 **Qwen3-Next-80B-A3B-Instruct → Qwen3-Coder-Next-FP8**로 변경 — `settings.json`의 `modelProviders.openai[].id`/`model.name` 및 `baseUrl` 경로(`/model/qwen3-next/v1` → `/model/qwen3-coder-next/v1`, 정보(중요)단말 :443 / 업무단말 :8080 동일) 갱신<br>- API 키는 기존과 같이 배포 설정에 넣지 않고 빈 값 유지 — 최초 실행 시 401 응답을 받으면 입력받아 저장하는 기존 흐름 사용<br>- README, 교육 자료(`kobi-training.html`), `kbpay-service-check/SKILL.md`의 연동 모델명 표기 갱신 및 `kbpay-service-check.skill` 재빌드 | Claude Opus 5.5 / 개발지원팀 |
 | **v20261015_0001** | 2026-10-15 | 코어 업데이트 | - Qwen Code 코어 모듈 **0.24.6 → 0.25.1** 업그레이드 — `npm-seed/package.json` 의존성 버전 갱신, 오프라인 캐시(`npm-cache`)/`node_modules`/`.tgz`(`qwen-code-qwen-code-0.25.1.tgz`) 전체 재생성<br>- 호환성 점검: 설정 스키마 비교 결과 Kobi `settings.json`이 사용하는 키의 삭제·기본값 변경 없음(신규 키 `agentCollaboration`/`enableStructuredRecall`/`mem0`/`mods`는 모두 기본 꺼짐), Node 요구사항(`>=22`) 동일, 스크롤 동작(`ui.useTerminalBuffer`) 동일<br>- **폐쇄망 대응**: 0.25.0부터 모델 메타데이터를 `https://models.dev/api.json`에서 24시간 주기로 조회하는 기능이 추가되어, 실행 스크립트(`kobi.ps1`, Linux `kobi`)에서 `QWEN_CODE_MODELS_DEV=off`로 외부 조회를 차단<br>- `./make.sh windows`로 테스트 빌드를 수행해 오프라인 설치본이 정상 패키징되고 번들 CLI가 `0.25.1`로 기동되는지 검증 후 테스트 산출물 정리 | Claude Opus 5.5 / 개발지원팀 |
 | **v20261015** | 2026-10-15 | 문서 보완 (사용 가이드) | - **Windows 11 PowerShell에서 이전 답변으로 스크롤되지 않는다는 문의 대응** — 버그가 아니라 Qwen Code 0.24.x의 기본 동작(`ui.useTerminalBuffer: true`, 대화 내역을 터미널 스크롤 버퍼 대신 앱 내부 스크롤 영역에 표시)임을 확인<br>- 배포 `settings.json` 기본값은 변경하지 않고(긴 세션의 화면 깜빡임·멈춤 방지 효과 유지), README §5 "유용한 기능 및 팁"과 교육 자료(`kobi-training.html` 03 기본 사용법)에 스크롤 단축키(`Shift+↑/↓`, `PgUp/PgDn`, `Ctrl+Home/End`, 마우스 휠) 및 `"useTerminalBuffer": false` 개별 전환 방법 안내 추가 | Claude Opus 5.5 / 개발지원팀 |
 | **v20260929_0002** | 2026-09-29 | GUI 전용 빌드 / CI 수정 | - **`build-desktop-tauri.yml` CI 버그 수정**: pnpm 워크스페이스(`packageManager: pnpm@11.24.0`, `pnpm-lock.yaml` 커밋됨)인데도 "Install qwen-code root deps" 스텝이 `npm install`을 써서 `pnpm-lock.yaml`을 무시하고 매번 npm 레지스트리 최신 상태로 의존성을 재해석 — 시간이 지나며 새 `@types/node`/`typescript`가 드리프트되어 태그 자체는 그대로인데도 `tsc --build`가 `Buffer`/`BlobPart` 타입 불일치로 깨짐. `corepack pnpm install --frozen-lockfile`로 교체해 근본 해결(파일별 우회 패치 3곳은 안전망으로 유지)<br>- **`desktop-v0.24.6` 태그는 `packages/desktop-shell`(Tauri) 대신 구 Electron 이름 `packages/desktop`으로 되돌아가 있어 이 워크플로우로 빌드 불가**(desktop-v0.24.{0,1,3,4,5}는 전부 `desktop-shell` 보유) 확인 — 워크플로우 기본 태그를 `desktop-v0.24.0` → `desktop-v0.24.5`로 갱신<br>- 위 수정 반영 후 `desktop-v0.24.5` 기준으로 `Kobi-Desktop-x64.exe` 최초 성공 빌드 및 `Kobi_Installer/assets/desktop/`에 반입<br>- `./make.sh windows-gui`로 **GUI 전용 배포본**(`Kobi_Installer_gui_v20260929_0803.zip`, CLI 에이전트·스킬 미포함) 생성 검증 | Claude Sonnet 5 / 개발지원팀 |

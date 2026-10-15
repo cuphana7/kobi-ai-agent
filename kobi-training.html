@@ -372,7 +372,7 @@
         <thead><tr><th>시간</th><th>구성</th><th>핵심 내용</th></tr></thead>
         <tbody>
           <tr><td class="mono">0:00–0:02</td><td>오프닝</td><td>교육 목적, Kobi 도입 배경</td></tr>
-          <tr><td class="mono">0:02–0:17</td><td>01. AI Agent 원리</td><td>LLM 발전 배경, tool-calling 루프, Qwen3-Next API 관점</td></tr>
+          <tr><td class="mono">0:02–0:17</td><td>01. AI Agent 원리</td><td>LLM 발전 배경, tool-calling 루프, Qwen3-Coder-Next API 관점</td></tr>
           <tr><td class="mono">0:17–0:27</td><td>02. Kobi 설치 (CLI)</td><td>사전 요구사항, 설치 3단계, 실행 확인</td></tr>
           <tr><td class="mono">0:27–0:37</td><td>03. 기본 사용법</td><td>대화형 실행, 승인 모드, 보안 가드레일, 스킬 소개</td></tr>
           <tr><td class="mono">0:37–0:55</td><td>04. 코딩 시연</td><td>범용 Java 프레임워크 전환 데모</td></tr>
@@ -407,7 +407,7 @@
 <pre class="mermaid">
 flowchart TD
     A[개발자 질문 / 요청] --> B["Kobi 클라이언트<br/>system prompt + 대화 히스토리 + tool 목록 구성"]
-    B --> C[Qwen3-Next-80B API 서버 호출]
+    B --> C[Qwen3-Coder-Next API 서버 호출]
     C -->|tool 필요| D[tool 실행 요청 응답]
     C -->|tool 불필요| E[자연어 답변 응답]
     D --> F{사용자 승인?}
@@ -421,7 +421,7 @@ flowchart TD
     <p style="color:var(--ink-soft); font-size:14.5px;">핵심은 <b>최종 답이 나올 때까지 이 루프가 반복된다</b>는 것입니다. tool 실행 결과가 다음 응답을 결정하고, 더 이상 tool이 필요 없어지면 최종 자연어 답변을 만듭니다.</p>
 
     <h3 style="font-size:16px; font-family:'Malgun Gothic',sans-serif; font-weight:700;">IT 관점 — 실제 request / response 구조</h3>
-    <p style="font-size:14.5px; color:var(--ink-soft);">Kobi(Qwen Code CLI) ↔ 사내 API 서버 <code>Qwen3-Next-80B-A3B-Instruct</code> · OpenAI 호환 endpoint (<code>settings.json</code>의 <code>baseUrl</code>)</p>
+    <p style="font-size:14.5px; color:var(--ink-soft);">Kobi(Qwen Code CLI) ↔ 사내 API 서버 <code>Qwen3-Coder-Next-FP8</code> · OpenAI 호환 endpoint (<code>settings.json</code>의 <code>baseUrl</code>)</p>
     <div class="rr-grid">
       <div class="rr-card req">
         <h4>→ Request</h4>
@@ -444,9 +444,9 @@ flowchart TD
 
     <div class="term">
       <div class="term-bar"><span class="dot"></span>request.json (요약)</div>
-      <pre><span class="comment">// Kobi → Qwen3-Next-80B API</span>
+      <pre><span class="comment">// Kobi → Qwen3-Coder-Next API</span>
 {
-  <span class="accent">"model"</span>: <span class="ok">"Qwen3-Next-80B-A3B-Instruct"</span>,
+  <span class="accent">"model"</span>: <span class="ok">"Qwen3-Coder-Next-FP8"</span>,
   <span class="accent">"messages"</span>: [
     { <span class="accent">"role"</span>: <span class="ok">"system"</span>, <span class="accent">"content"</span>: <span class="ok">"QWEN.md 지침문 …"</span> },
     { <span class="accent">"role"</span>: <span class="ok">"user"</span>,   <span class="accent">"content"</span>: <span class="ok">"OrderController를 Spring MVC로 바꿔줘"</span> }
@@ -734,7 +734,7 @@ kobi --version
 
 <footer>
   <span>Kobi · KB AI Assistant 사내 배포 교육 자료</span>
-  <span class="mono">Qwen3-Next-80B-A3B-Instruct 기반</span>
+  <span class="mono">Qwen3-Coder-Next-FP8 기반</span>
 </footer>
 
 <script>
