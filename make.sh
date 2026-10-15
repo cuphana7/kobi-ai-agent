@@ -388,6 +388,8 @@ if [ ! -f "$QWEN_CLI" ]; then
 fi
 
 export QWEN_CODE_SYSTEM_SETTINGS_PATH="$CONFIG_PATH"
+# 폐쇄망: qwen-code 0.25+의 models.dev 모델 카탈로그 외부 조회(24시간 주기)를 차단한다.
+export QWEN_CODE_MODELS_DEV=off
 export PATH="$INSTALL_ROOT/node/bin:$PATH"
 
 # 사내 vLLM 서버 API 키 사전 점검
@@ -528,6 +530,8 @@ if (-not (Test-Path $QwenCliJs)) {
 }
 
 $env:QWEN_CODE_SYSTEM_SETTINGS_PATH = $ConfigPath
+# 폐쇄망: qwen-code 0.25+의 models.dev 모델 카탈로그 외부 조회(24시간 주기)를 차단한다.
+$env:QWEN_CODE_MODELS_DEV = "off"
 $env:Path = "$NodeDir;$env:Path"
 
 # 번들 git(MinGit)이 있으면 이 세션 PATH 앞에 추가한다(별도 git 설치 없이 CLI 동작 보장).
