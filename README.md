@@ -122,6 +122,17 @@ kobi-package/
   ```powershell
   kobi -p (Get-Clipboard)
   ```
+- **이전 답변으로 스크롤하기**: Kobi는 긴 대화에서 화면 깜빡임·멈춤을 막기 위해 대화 내용을 **Kobi 화면 내부의 스크롤 영역**에 표시합니다(Qwen Code 0.24.x 기본값 `ui.useTerminalBuffer: true`). 따라서 PowerShell 창의 스크롤바로는 이전 내용이 보이지 않으며, 아래 키를 사용합니다.
+
+  | 동작 | 키 |
+  | :--- | :--- |
+  | 한 줄씩 위/아래 | `Shift + ↑` / `Shift + ↓` |
+  | 한 페이지씩 위/아래 | `PgUp` / `PgDn` |
+  | 맨 위 / 맨 아래 | `Ctrl + Home` / `Ctrl + End` |
+  | 스크롤 | Kobi 화면 위에서 마우스 휠 |
+
+  - 마우스로 드래그하면 Kobi가 텍스트를 선택하고, 버튼을 놓는 즉시 클립보드에 복사됩니다. PowerShell 자체 선택 기능을 쓰려면 `Shift`를 누른 채 드래그합니다.
+  - 예전처럼 PowerShell 스크롤바를 쓰고 싶다면 `%USERPROFILE%\.qwen\settings.json`의 `"ui"` 항목에 `"useTerminalBuffer": false`를 추가하고 Kobi를 재시작합니다. 단, 대화가 길어지면 화면 깜빡임·버벅임이 생길 수 있습니다.
 
 ### Kobi Desktop (GUI) — 선택 사항
 CLI(`kobi`)에 더해, 터미널이 익숙하지 않은 사용자를 위한 **그래픽 데스크톱 앱(Kobi Desktop)**을 함께 배포할 수 있습니다.
@@ -244,6 +255,7 @@ KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본
 
 | 버전 | 변경 일자 | 변경 구분 | 상세 변경 내용 | 작업자 |
 | :--- | :--- | :--- | :--- | :--- |
+| **v20261015** | 2026-10-15 | 문서 보완 (사용 가이드) | - **Windows 11 PowerShell에서 이전 답변으로 스크롤되지 않는다는 문의 대응** — 버그가 아니라 Qwen Code 0.24.x의 기본 동작(`ui.useTerminalBuffer: true`, 대화 내역을 터미널 스크롤 버퍼 대신 앱 내부 스크롤 영역에 표시)임을 확인<br>- 배포 `settings.json` 기본값은 변경하지 않고(긴 세션의 화면 깜빡임·멈춤 방지 효과 유지), README §5 "유용한 기능 및 팁"과 교육 자료(`kobi-training.html` 03 기본 사용법)에 스크롤 단축키(`Shift+↑/↓`, `PgUp/PgDn`, `Ctrl+Home/End`, 마우스 휠) 및 `"useTerminalBuffer": false` 개별 전환 방법 안내 추가 | Claude Opus 5.5 / 개발지원팀 |
 | **v20260929_0002** | 2026-09-29 | GUI 전용 빌드 / CI 수정 | - **`build-desktop-tauri.yml` CI 버그 수정**: pnpm 워크스페이스(`packageManager: pnpm@11.24.0`, `pnpm-lock.yaml` 커밋됨)인데도 "Install qwen-code root deps" 스텝이 `npm install`을 써서 `pnpm-lock.yaml`을 무시하고 매번 npm 레지스트리 최신 상태로 의존성을 재해석 — 시간이 지나며 새 `@types/node`/`typescript`가 드리프트되어 태그 자체는 그대로인데도 `tsc --build`가 `Buffer`/`BlobPart` 타입 불일치로 깨짐. `corepack pnpm install --frozen-lockfile`로 교체해 근본 해결(파일별 우회 패치 3곳은 안전망으로 유지)<br>- **`desktop-v0.24.6` 태그는 `packages/desktop-shell`(Tauri) 대신 구 Electron 이름 `packages/desktop`으로 되돌아가 있어 이 워크플로우로 빌드 불가**(desktop-v0.24.{0,1,3,4,5}는 전부 `desktop-shell` 보유) 확인 — 워크플로우 기본 태그를 `desktop-v0.24.0` → `desktop-v0.24.5`로 갱신<br>- 위 수정 반영 후 `desktop-v0.24.5` 기준으로 `Kobi-Desktop-x64.exe` 최초 성공 빌드 및 `Kobi_Installer/assets/desktop/`에 반입<br>- `./make.sh windows-gui`로 **GUI 전용 배포본**(`Kobi_Installer_gui_v20260929_0803.zip`, CLI 에이전트·스킬 미포함) 생성 검증 | Claude Sonnet 5 / 개발지원팀 |
 | **v20260929_0001** | 2026-09-29 | 코어 업데이트 | - Qwen Code 코어 모듈 **0.24.3 → 0.24.6** 업그레이드 — `npm-seed/package.json` 의존성 버전 갱신, 오프라인 캐시(`npm-cache`)/`node_modules`/`.tgz`(`qwen-code-qwen-code-0.24.6.tgz`) 전체 재생성<br>- `./make.sh windows`로 테스트 빌드를 수행해 오프라인 설치본이 정상 패키징되는지 검증 후 테스트 산출물 정리 | Claude Sonnet 5 / 개발지원팀 |
 | **v20260923_0006** | 2026-09-23 | 보안 정책 변경 | - **설치 시 사번(사용자 계정) 허용 목록 검증 로직 제거** — `Install-Kobi.ps1`의 `$AllowedUsers` 및 `install.sh`의 `ALLOWED_USERS` 체크와 관련 오류 메시지를 완전히 삭제. 이제 허용 목록에 없는 계정에서도 설치가 차단되지 않음 — 배포 관리자 명시적 요청에 따른 변경 | Claude Sonnet 5 / 개발지원팀 |
