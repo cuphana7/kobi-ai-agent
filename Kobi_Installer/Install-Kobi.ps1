@@ -281,6 +281,10 @@ if (Test-Path (Join-Path $BinRoot "kobi.cmd")) {
 }
 if (Test-Path (Join-Path $GitCmdRoot "git.exe")) {
     Write-Host "번들 git(MinGit) 경로가 등록되었습니다: $GitCmdRoot"
+} elseif (Get-Command git -ErrorAction SilentlyContinue) {
+    Write-Host "번들 git 이 없어 건너뜁니다(시스템에 설치된 git 을 사용합니다)."
+} else {
+    Write-Host "번들 git 이 없어 건너뜁니다. 시스템에도 git 이 없어 git 관련 작업(git diff/log, worktree 등)은 사용할 수 없습니다." -ForegroundColor Yellow
 }
 
 # 4. 에이전트 구동 및 최종 설치 상태 검증

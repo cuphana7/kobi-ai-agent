@@ -65,8 +65,12 @@ echo ""
 fi  # end: qwen 레지스트리 점검(skills 서브타깃 제외)
 
 # 2. 타겟 플랫폼 및 버전 정보 결정
-#    사용법: ./make.sh [linux|windows|windows-gui|skills] [version]
-#    - 첫 인자가 linux/windows(win)/windows-gui(gui)/skills 면 타겟으로 소비하고, 아니면 windows(기본, 하위호환)로 간주한다.
+#    사용법: ./make.sh [linux|windows|windows-full|windows-gui|skills] [version]
+#    - 첫 인자가 linux/windows(win)/windows-full(full)/windows-gui(gui)/skills 면 타겟으로 소비하고, 아니면 windows(기본)로 간주한다.
+#    - windows(win, 기본): 코어 CLI 전용 — Desktop(GUI)·스킬·Computer Use·포터블 git 을 모두 기본 제외한다
+#      (NO_DESKTOP/NO_SKILLS/NO_COMPUTER_USE/NO_GIT 기본값 1). 개별 항목만 다시 넣으려면 해당 변수를 0으로 준다.
+#      예: git 만 포함 → NO_GIT=0 ./make.sh windows
+#    - windows-full(full): 이전 기본 동작인 조합형 — CLI + Desktop(GUI) + 스킬 + Computer Use + git 을 모두 담는다.
 #    - windows-gui(gui): CLI(qwen)·스킬을 빼고 Desktop(GUI) 중심으로만 패키징한다(용량 절감).
 #    - skills: 스킬 5종만 ~/.qwen 에 압축 해제하는 별도 배포 번들로 묶는다.
 #    - 남은 인자를 버전으로 쓰고, 없으면 연월일_시분 'YYYYMMDD_HHMM' 형식으로 자동 생성한다.
@@ -75,15 +79,24 @@ fi  # end: qwen 레지스트리 점검(skills 서브타깃 제외)
 #    - NO_DESKTOP=1 환경변수: Kobi Desktop(GUI)을 제외해 CLI 전용으로 패키징한다(full 빌드에만 적용).
 #    - NO_COMPUTER_USE=1 환경변수: Computer Use(화면 읽기) 드라이버 자산을 제외하고 settings.json의
 #      tools.computerUse를 비활성화한다(linux 타겟은 원래부터 항상 비활성).
-#      예: 코어 CLI만(GUI·스킬·Computer Use 모두 제외) → NO_DESKTOP=1 NO_SKILLS=1 NO_COMPUTER_USE=1 ./make.sh windows
+#      예: 조합형에서 Desktop 만 제외 → NO_DESKTOP=1 ./make.sh windows-full
 TARGET="windows"
 FLAVOR="full"
+CLI_ONLY=1
 case "$1" in
-  linux)           TARGET="linux";   shift ;;
-  windows|win)     TARGET="windows"; shift ;;
-  windows-gui|gui) TARGET="windows"; FLAVOR="gui"; shift ;;
-  skills)          TARGET="skills";  shift ;;
+  linux)            TARGET="linux";   CLI_ONLY=0; shift ;;
+  windows|win)      TARGET="windows"; shift ;;
+  windows-full|full) TARGET="windows"; CLI_ONLY=0; shift ;;
+  windows-gui|gui)  TARGET="windows"; FLAVOR="gui"; CLI_ONLY=0; shift ;;
+  skills)           TARGET="skills";  CLI_ONLY=0; shift ;;
 esac
+
+# 기본 windows 빌드는 코어 CLI 전용: 명시적으로 지정하지 않은 트리밍 변수는 1(제외)로 둔다.
+if [ "$CLI_ONLY" = "1" ]; then
+  : "${NO_DESKTOP:=1}" "${NO_SKILLS:=1}" "${NO_COMPUTER_USE:=1}" "${NO_GIT:=1}"
+  echo "기본 빌드(코어 CLI 전용): NO_DESKTOP=$NO_DESKTOP NO_SKILLS=$NO_SKILLS NO_COMPUTER_USE=$NO_COMPUTER_USE NO_GIT=$NO_GIT"
+  echo "  (Desktop·스킬·Computer Use·git 을 모두 담은 조합형은 ./make.sh windows-full)"
+fi
 
 # 리눅스에는 데스크톱(GUI) 산출물이 없으므로 GUI 전용 조합을 금지한다.
 if [ "$TARGET" = "linux" ] && [ "$FLAVOR" = "gui" ]; then

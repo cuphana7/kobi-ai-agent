@@ -73,7 +73,8 @@ export NODE_EXTRA_CA_CERTS="C:/Users/K121105/Downloads/corp-ca-bundle.pem"   # T
 1. (가능하면 실제 Windows 에서) 설치·실행하여 **창 제목 / About / 아이콘**이 "Kobi"인지,
    GUI 가 내부 vLLM 에 붙는지 확인한다.
 2. 저장소 루트에서 패키징:
-   - `./make.sh windows` — CLI + Desktop(GUI) + 스킬을 모두 담는 **조합형** 배포 zip.
+   - `./make.sh windows-full` — CLI + Desktop(GUI) + 스킬을 모두 담는 **조합형** 배포 zip.
+     (`./make.sh windows` 기본 빌드는 코어 CLI 전용이라 Desktop 이 들어가지 않는다.)
    - `./make.sh windows-gui` — **GUI 전용** 배포 zip(`Kobi_Installer_gui_v*.zip`). CLI 에이전트(qwen)와
      스킬을 빼서 용량을 줄인다(약 26% 감소). node·git·Desktop·config·computer-use 는 유지한다.
      Desktop 산출물(`assets/desktop/Kobi-Desktop-*.exe`)이 없으면 에러로 중단한다.
