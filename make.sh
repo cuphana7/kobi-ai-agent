@@ -471,6 +471,7 @@ cat <<'EOF' > "$RUNTIME_DIR/bin/kobi.cmd"
 @echo off
 setlocal
 chcp 65001 >nul
+title Kobi
 
 set "KB_CODE_HOME=%~dp0.."
 set "KB_CODE_PS1=%KB_CODE_HOME%\bin\kobi.ps1"
@@ -649,6 +650,12 @@ if ($args) {
 }
 
 Write-Host "Kobi 에이전트를 시작합니다..." -ForegroundColor DarkGray
+
+# 콘솔 제목이 비어 있거나 이전 프로그램이 비정상 종료하며 깨진 상태로 남아 있으면
+# Node(libuv)가 시작 시 process.title을 읽다가
+# "Assertion failed: process_title, file ...\uv\src\win\util.c" 로 즉시 중단된다.
+# node 실행 직전에 콘솔 제목을 명시적으로 설정해 이 상태를 초기화한다.
+try { $Host.UI.RawUI.WindowTitle = "Kobi" } catch { }
 
 & $NodeExePath "$QwenCliJs" --append-system-prompt $AppendPrompt @QwenArgs
 exit $LASTEXITCODE
