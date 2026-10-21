@@ -3,8 +3,8 @@
     "openai": [
       {
         "id": "Qwen3-Coder-Next-FP8",
-        "name": "정보(중요)단말",
-        "envKey": "QWEN_CUSTOM_API_KEY_OPENAI_HTTP_10_210_169_48_8103_V1_8517E24EE066",
+        "name": "정보(중요)단말 - Qwen3-Coder-Next",
+        "envKey": "KOBI_VLLM_API_KEY",
         "baseUrl": "http://codex.kbcard.com:443/model/qwen3-coder-next/v1",
         "generationConfig": {
           "contextWindowSize": 262144
@@ -12,9 +12,27 @@
       },
       {
         "id": "Qwen3-Coder-Next-FP8",
-        "name": "업무단말",
-        "envKey": "QWEN_CUSTOM_API_KEY_OPENAI_HTTP_10_210_169_48_8103_V1_8517E24EE066",
+        "name": "업무단말 - Qwen3-Coder-Next",
+        "envKey": "KOBI_VLLM_API_KEY",
         "baseUrl": "http://codex.kbcard.com:8080/model/qwen3-coder-next/v1",
+        "generationConfig": {
+          "contextWindowSize": 262144
+        }
+      },
+      {
+        "id": "Qwen3-Next-80B-A3B-Instruct",
+        "name": "정보(중요)단말 - Qwen3-Next",
+        "envKey": "KOBI_VLLM_API_KEY",
+        "baseUrl": "http://codex.kbcard.com:443/model/qwen3-next/v1",
+        "generationConfig": {
+          "contextWindowSize": 262144
+        }
+      },
+      {
+        "id": "Qwen3-Next-80B-A3B-Instruct",
+        "name": "업무단말 - Qwen3-Next",
+        "envKey": "KOBI_VLLM_API_KEY",
+        "baseUrl": "http://codex.kbcard.com:8080/model/qwen3-next/v1",
         "generationConfig": {
           "contextWindowSize": 262144
         }
@@ -22,8 +40,7 @@
     ]
   },
   "env": {
-    "VLLM_API_KEY": "not-needed",
-    "QWEN_CUSTOM_API_KEY_OPENAI_HTTP_10_210_169_48_8103_V1_8517E24EE066": ""
+    "KOBI_VLLM_API_KEY": ""
   },
   "security": {
     "auth": {
