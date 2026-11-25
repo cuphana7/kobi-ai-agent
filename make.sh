@@ -72,10 +72,10 @@ fi  # end: qwen 레지스트리 점검(skills 서브타깃 제외)
 #      예: git 만 포함 → NO_GIT=0 ./make.sh windows
 #    - windows-full(full): 이전 기본 동작인 조합형 — CLI + Desktop(GUI) + 스킬 + Computer Use + git 을 모두 담는다.
 #    - windows-gui(gui): CLI(qwen)·스킬을 빼고 Desktop(GUI) 중심으로만 패키징한다(용량 절감).
-#    - skills: 스킬 5종만 ~/.qwen 에 압축 해제하는 별도 배포 번들로 묶는다.
+#    - skills: 스킬 6종만 ~/.qwen 에 압축 해제하는 별도 배포 번들로 묶는다.
 #    - 남은 인자를 버전으로 쓰고, 없으면 연월일_시분 'YYYYMMDD_HHMM' 형식으로 자동 생성한다.
 #    - NO_GIT=1 환경변수: 포터블 git(MinGit)을 제외해 추가 경량화(대상 PC에 git 이 있을 때).
-#    - NO_SKILLS=1 환경변수: 스킬 5종을 패키지에서 제외한다(별도 배포: ./make.sh skills).
+#    - NO_SKILLS=1 환경변수: 스킬 6종을 패키지에서 제외한다(별도 배포: ./make.sh skills).
 #    - NO_DESKTOP=1 환경변수: Kobi Desktop(GUI)을 제외해 CLI 전용으로 패키징한다(full 빌드에만 적용).
 #    - NO_COMPUTER_USE=1 환경변수: Computer Use(화면 읽기) 드라이버 자산을 제외하고 settings.json의
 #      tools.computerUse를 비활성화한다(linux 타겟은 원래부터 항상 비활성).
@@ -164,7 +164,14 @@ rm -f kbpay-service-check.skill Kobi_Installer/assets/kbpay-service-check.skill
 (cd kbpay-service-check && zip -rq ../kbpay-service-check.skill *)
 cp kbpay-service-check.skill Kobi_Installer/assets/kbpay-service-check.skill
 
-# 3-b. skills 서브타깃: 스킬 5종만 별도 배포 번들로 묶고 종료한다.
+echo "----------------------------------------------------------"
+echo " Rebuilding intranet-web.skill from intranet-web/..."
+echo "----------------------------------------------------------"
+rm -f intranet-web.skill Kobi_Installer/assets/intranet-web.skill
+(cd intranet-web && zip -rq ../intranet-web.skill *)
+cp intranet-web.skill Kobi_Installer/assets/intranet-web.skill
+
+# 3-b. skills 서브타깃: 스킬 6종만 별도 배포 번들로 묶고 종료한다.
 #      각 .skill 은 스킬 내용의 zip 이므로 skills/<name>/ 레이아웃으로 풀어, 사용자가
 #      %USERPROFILE%\.qwen\ 에 압축만 해제하면 GUI(및 CLI)가 스킬을 인식하도록 한다.
 if [ "$TARGET" = "skills" ]; then
@@ -175,7 +182,7 @@ if [ "$TARGET" = "skills" ]; then
   rm -rf "$SKILLS_DIST"
   SKILLS_ROOT="$SKILLS_DIST/skills"
   mkdir -p "$SKILLS_ROOT"
-  for S in jennifer-monitor project-bootstrap frism-cm office-edit kbpay-service-check; do
+  for S in jennifer-monitor project-bootstrap frism-cm office-edit kbpay-service-check intranet-web; do
     if [ ! -f "$S.skill" ]; then
       echo "Error: $S.skill 을 찾을 수 없습니다. 스킬 재빌드 단계를 확인하세요."
       exit 1
@@ -197,7 +204,8 @@ Kobi 스킬 번들 (별도 배포)
 참고
 - 스킬의 node 스크립트(scripts\*.cjs)는 Kobi 설치가 PATH 에 등록한 node 로 실행됩니다.
   (Kobi 설치본이 있으면 별도 node 설치가 필요 없습니다.)
-- 포함 스킬: jennifer-monitor, project-bootstrap, frism-cm, office-edit, kbpay-service-check
+- 포함 스킬: jennifer-monitor, project-bootstrap, frism-cm, office-edit, kbpay-service-check, intranet-web
+  (intranet-web 은 Windows 전용)
 SKILLS_README_EOF
 
   rm -f "$PKG_NAME" "$SHA_NAME"
@@ -696,17 +704,21 @@ else
   cp Kobi_Installer/Uninstall-Kobi.ps1 "$DIST_PKG_DIR/"
 fi
 
-# 필수 assets 복사 (스킬 5종)
+# 필수 assets 복사 (스킬 6종, intranet-web 은 Windows 전용)
 # GUI 전용 빌드는 스킬을 담지 않는다(별도 배포: ./make.sh skills → Kobi_Skills_v*.zip).
 mkdir -p "$DIST_PKG_DIR/assets"
 if [ "$FLAVOR" = "gui" ] || [ "$NO_SKILLS" = "1" ]; then
-  echo "스킬 5종을 패키지에서 제외합니다(별도 배포 번들 사용: ./make.sh skills)."
+  echo "스킬 6종을 패키지에서 제외합니다(별도 배포 번들 사용: ./make.sh skills)."
 else
   cp Kobi_Installer/assets/jennifer-monitor.skill "$DIST_PKG_DIR/assets/"
   cp Kobi_Installer/assets/project-bootstrap.skill "$DIST_PKG_DIR/assets/"
   cp Kobi_Installer/assets/frism-cm.skill "$DIST_PKG_DIR/assets/"
   cp Kobi_Installer/assets/office-edit.skill "$DIST_PKG_DIR/assets/"
   cp Kobi_Installer/assets/kbpay-service-check.skill "$DIST_PKG_DIR/assets/"
+  # intranet-web 은 Edge(CDP) 기반 Windows 전용 스킬이므로 linux 패키지에는 넣지 않는다
+  if [ "$TARGET" != "linux" ]; then
+    cp Kobi_Installer/assets/intranet-web.skill "$DIST_PKG_DIR/assets/"
+  fi
 fi
 
 # Computer Use(화면 읽기 전용) 드라이버 자산 복사 (윈도우 전용; 리눅스는 드라이버 없음 → 생략)

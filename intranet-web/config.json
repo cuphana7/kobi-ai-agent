@@ -1,0 +1,14 @@
+{
+  "allowedHosts": [],
+  "startUrl": "",
+  "afterLoginUrl": "",
+  "loginUrlPatterns": ["sso", "login", "signin", "logon"],
+  "debugPort": 9333,
+  "maxChars": 20000,
+  "maxRows": 200,
+  "navigateTimeoutSec": 30,
+  "loginWaitSec": 180,
+  "pollIntervalSec": 2,
+  "apiMaxChars": 100000,
+  "apis": []
+}
