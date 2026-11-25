@@ -101,6 +101,7 @@ $Skills = @(
     @{ Dir='frism-cm';            Asset='frism-cm.skill';            Msg='Frism CM 연동 스킬이 성공적으로 추가되었습니다.';               SkipMsg='안내: Frism CM 연동 스킬 자산이 없어 설치를 건너뜁니다.' }
     @{ Dir='office-edit';         Asset='office-edit.skill';         Msg='Office(Excel/Word) 편집 스킬이 성공적으로 추가되었습니다.';     SkipMsg='안내: Office(Excel/Word) 편집 스킬 자산이 없어 설치를 건너뜁니다.' }
     @{ Dir='kbpay-service-check'; Asset='kbpay-service-check.skill'; Msg='KB Pay 서비스 지연 점검 스킬이 성공적으로 추가되었습니다.';     SkipMsg='안내: KB Pay 서비스 지연 점검 스킬 자산이 없어 설치를 건너뜁니다.' }
+    @{ Dir='intranet-web';        Asset='intranet-web.skill';        Msg='사내 SSO 웹서비스 조회 스킬이 성공적으로 추가되었습니다.';      SkipMsg='안내: 사내 SSO 웹서비스 조회 스킬 자산이 없어 설치를 건너뜁니다.' }
 )
 
 foreach ($sk in $Skills) {

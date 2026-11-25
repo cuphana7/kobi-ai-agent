@@ -38,6 +38,7 @@ kobi-package/
     │   ├── project-bootstrap.skill # 프로젝트 부트스트랩 스킬 파일
     │   ├── frism-cm.skill      # Frism 형상관리 연동 스킬 파일
     │   ├── office-edit.skill   # Office(Excel/Word) 파일 읽기/수정 스킬 파일
+    │   ├── intranet-web.skill  # 사내 SSO 웹서비스 화면 읽기 전용 조회 스킬 파일 (Windows 전용)
     │   └── computer-use/       # Computer Use(화면 읽기 전용) 드라이버 자산
     │       └── cua-driver-rs-0.5.2-windows-x86_64.zip
     └── Kobi_Runtime/           # [빌드 시 자동생성] 사전 구축된 무설치 런타임 폴더
@@ -140,7 +141,7 @@ CLI(`kobi`)에 더해, 터미널이 익숙하지 않은 사용자를 위한 **�
 - **동시 설치**: 배포 패키지에 Desktop 설치물(`assets/desktop/Kobi-Desktop-x64.exe`)이 포함되어 있으면, `Install-Kobi.cmd` 실행 시 CLI와 함께 **무인 설치**됩니다(per-user 설치라 관리자 권한 불필요). 설치 후 **시작 메뉴에서 "Kobi"**를 실행하면 됩니다.
 - **사내 vLLM 사전 연결**: 설치기가 `~/.qwen/settings.json`에 사내 vLLM 연결 정보를 구성하므로, Desktop 최초 실행부터 바로 사내 모델로 대화할 수 있습니다. CLI와 동일한 스킬/지침(`~/.qwen/skills`, `QWEN.md`)도 그대로 공유됩니다.
 - **포터블 git 포함(조합형·GUI 전용)**: qwen-code 런타임(CLI·Desktop 공용)은 `git`에 의존하며, git이 없는 PC에서는 특히 Desktop 실행이 실패합니다. 이를 위해 `windows-full`/`windows-gui` 패키지에는 **MinGit**(Git for Windows 최소 번들판)을 함께 넣어 `Kobi_Runtime\git`으로 추출하고 설치 시 `git\cmd`를 PATH에 등록합니다. 별도 git 설치가 필요 없습니다. (빌드 시 `Kobi_Installer/assets/`에 `MinGit-*-64-bit.zip`을 넣어두어야 포함됩니다.)
-- **CLI 전용 배포(기본)**: `./make.sh`(= `./make.sh windows`)는 **코어 CLI 전용** 패키지를 만듭니다. Desktop(GUI)·스킬 5종·Computer Use·포터블 git을 모두 제외하며(`NO_DESKTOP`/`NO_SKILLS`/`NO_COMPUTER_USE`/`NO_GIT` 기본값 1), 대상 PC에 git이 없으면 git 관련 작업(`git diff`/`log`, worktree 등)만 사용할 수 없고 나머지 기능은 정상 동작합니다. 개별 항목만 다시 넣으려면 해당 변수를 0으로 지정합니다(예: `NO_GIT=0 ./make.sh windows` → git 포함). 스킬은 `./make.sh skills` 별도 번들로 배포합니다.
+- **CLI 전용 배포(기본)**: `./make.sh`(= `./make.sh windows`)는 **코어 CLI 전용** 패키지를 만듭니다. Desktop(GUI)·스킬 6종·Computer Use·포터블 git을 모두 제외하며(`NO_DESKTOP`/`NO_SKILLS`/`NO_COMPUTER_USE`/`NO_GIT` 기본값 1), 대상 PC에 git이 없으면 git 관련 작업(`git diff`/`log`, worktree 등)만 사용할 수 없고 나머지 기능은 정상 동작합니다. 개별 항목만 다시 넣으려면 해당 변수를 0으로 지정합니다(예: `NO_GIT=0 ./make.sh windows` → git 포함). 스킬은 `./make.sh skills` 별도 번들로 배포합니다.
 - **조합형 배포**: CLI + Desktop + 스킬 + Computer Use + git을 모두 담으려면 `./make.sh windows-full`을 사용합니다(이전 기본 동작). 여기서도 `NO_DESKTOP=1` 등 환경변수로 일부만 뺄 수 있습니다.
 - **GUI 전용 배포**: GUI만 필요하고 용량을 줄이려면 `./make.sh windows-gui`로 **GUI 전용 패키지**(`Kobi_Installer_gui_v*.zip`)를 만들 수 있습니다. CLI 에이전트(qwen)와 스킬을 빼서 조합형 대비 약 26% 작습니다(node·git·Desktop·설정은 유지). 스킬은 `./make.sh skills`로 만든 **별도 번들**(`Kobi_Skills_v*.zip`)을 사용자 홈의 `~/.qwen`에 압축 해제해 사용합니다. 같은 설치기가 조합형/GUI 전용을 자동 감지하며, node가 PATH에 등록되어 스킬의 node 스크립트가 GUI에서도 동작합니다.
 - **자동 업데이트**: 폐쇄망 환경이므로 앱 자체 자동 업데이트는 동작하지 않습니다(정상).
@@ -221,6 +222,21 @@ CLI(`kobi`)에 더해, 터미널이 익숙하지 않은 사용자를 위한 **�
 
 ---
 
+## 9-1. 사내 SSO 웹서비스 조회 스킬 (intranet-web)
+
+API 없이 HTML 화면만 제공하고 **화면의 SSO 로그인 버튼으로 로그인**하는 사내 웹서비스를 Kobi가 **읽기 전용**으로 조회하는 스킬입니다(Windows 전용).
+
+- **스킬 파일**: `Kobi_Installer/assets/intranet-web.skill` → 설치 시 `~/.qwen/skills/intranet-web`
+- **동작 방식**: Kobi가 전용 프로필(`%LOCALAPPDATA%\Kobi\edge-profile`)로 Microsoft Edge를 로컬 디버깅 포트(127.0.0.1 전용)와 함께 열고, **사용자가 그 창에서 직접 SSO 로그인**하면 화면의 본문 텍스트·표·링크를 읽어옵니다. Kobi는 ID/PW·쿠키·토큰을 다루지 않습니다.
+- **사전 설정**: `~/.qwen/skills/intranet-web/config.json`의 `allowedHosts`에 조회할 서비스 호스트를 등록해야 합니다(비어 있으면 동작하지 않음). 필요 시 `startUrl`, `loginUrlPatterns`도 조정합니다.
+- **명령**: `open`(Edge 열기) / `status`(로그인 상태) / `goto`(허용 호스트로 이동) / `read`(본문) / `tables`(표) / `links`(링크) / `wait-login`(로그인 완료 대기 후 목표 페이지 자동 이동) / `api-get`(로그인 세션으로 사내 API GET 호출 → JSON) / `apis`(등록된 API 목록)
+- **로그인 후 자동 이동**: `config.json`의 `afterLoginUrl`을 설정하면 `open --wait` 한 번으로 "Edge 열기 → 사용자 SSO 로그인 대기 → 목표 페이지 이동 → 본문·표 반환"이 이어서 진행되고, Kobi가 그 내용을 요약합니다.
+- **API(ajax) 조회**: 화면이 내부적으로 호출하는 API 주소(Edge F12 → Network → Fetch/XHR에서 확인)를 `config.json`의 `apis`에 등록해 두면, Kobi가 로그인된 탭 안에서 **GET으로만** 호출해 JSON 결과를 받아옵니다(같은 출처 화면이 열려 있어야 함, 쿠키 값은 노출되지 않음).
+- **안전 원칙**: 클릭·입력·폼 제출·쿠키 조회 기능이 없고 API 호출은 GET으로 고정되며, 허용 호스트 이외의 주소와 logout·delete·approve·save 등 상태 변경이 의심되는 주소로는 이동하지 않습니다(`SECURITY_BLOCK`). `WebFetch` 차단 정책은 그대로 유지됩니다.
+- **제약**: 회사 그룹 정책으로 Edge 원격 디버깅(`RemoteDebuggingAllowed`)이 차단된 PC에서는 사용할 수 없습니다(`DEBUG_PORT_UNAVAILABLE`).
+
+---
+
 ## 10. 개발 지침 및 보안 정책 (Security & Guardrails)
 
 KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본 동작이 고정되어 있습니다.
@@ -256,8 +272,10 @@ KB AI Code Assistant는 사내 보안 지침을 철저히 준수하도록 기본
 
 | 버전 | 변경 일자 | 변경 구분 | 상세 변경 내용 | 작업자 |
 | :--- | :--- | :--- | :--- | :--- |
+| **v20261125_0001** | 2026-11-25 | 기능 추가 (스킬) | - **`intranet-web` 스킬에 로그인 후 자동 이동·API 조회 기능 추가**<br>- `wait-login` / `open --wait`: 사용자가 Edge 창에서 SSO 로그인을 마칠 때까지 기다린 뒤(`loginWaitSec`, 기본 180초) `--then` 또는 `config.json`의 `afterLoginUrl` 페이지로 이동해 본문·표를 한 번에 반환 → Kobi가 요약<br>- `api-get`: 로그인된 탭 안에서 `fetch(credentials: 'include')`로 같은 출처의 사내 API를 **GET으로만** 호출해 JSON 반환(상대 경로 지원, EUC-KR 응답 디코딩, `apiMaxChars` 상한, 세션 만료 리다이렉트·401/403 감지). `apis`: `config.json`에 등록한 자주 쓰는 API 목록 반환<br>- 보안 게이트 유지: 허용 호스트·차단 단어 검사를 API 주소에도 동일 적용, POST 등 본문 전송 경로 없음, 쿠키 값 비노출<br>- ⚠️ 화면에 표시되지 않는 데이터까지 API로 조회할 수 있어 조회 범위가 넓어지므로 **배포 전 보안팀 검토 필요** | Claude Opus 5.5 / 개발지원팀 |
+| **v20261125** | 2026-11-25 | 기능 추가 (스킬) | - **사내 SSO 웹서비스 조회 스킬(`intranet-web`) 추가** — API 없이 HTML 화면만 있고 화면의 SSO 로그인 버튼으로 로그인하는 사내 웹서비스를 읽기 전용으로 조회<br>- 전용 프로필로 Edge를 로컬 디버깅 포트(127.0.0.1)와 함께 실행 → 사용자가 직접 SSO 로그인 → Chrome DevTools Protocol로 본문·표·링크만 읽음(번들 Node 22 내장 WebSocket 사용, 추가 의존성 없음). 같은 출처 frame/iframe 포함, EUC-KR 화면 지원<br>- **보안 게이트(스킬 코어)**: 클릭·입력·폼 제출·쿠키 조회 미구현, 고정 추출 스크립트만 실행, `config.json`의 `allowedHosts` 밖의 주소 및 logout/delete/approve/save 등 상태 변경 의심 주소 이동 시 `SECURITY_BLOCK`, 허용 호스트가 아닌 탭(SSO 인증 서버 등)의 주소·제목 비노출. `settings.json`의 `WebFetch` 차단은 유지<br>- `make.sh` 스킬 재빌드·`skills` 번들·패키징에 추가(Windows 전용이라 linux 패키지 제외), `Install-Kobi.ps1` `$Skills` 배열에 항목 추가<br>- ⚠️ 로컬 디버깅 포트라는 새 접근 경로가 생기므로 **배포 전 보안팀 검토 필요** | Claude Opus 5.5 / 개발지원팀 |
 | **v20261021** | 2026-10-21 | 연동 모델 추가 | - `settings.json`의 `modelProviders.openai`를 2개 → **4개**로 확장해 `/model`에서 단말·모델 조합을 선택 가능하도록 변경<br>  · 정보(중요)단말(:443) / 업무단말(:8080) × **Qwen3-Coder-Next-FP8**(`/model/qwen3-coder-next/v1`) · **Qwen3-Next-80B-A3B-Instruct**(`/model/qwen3-next/v1`)<br>- 각 항목의 `name`을 `<단말> - <모델>` 형식으로 변경해 `/model` 목록에서 구분되도록 함, 기본 모델(`model.name`)은 Qwen3-Coder-Next-FP8 유지<br>- API 키는 4개 항목이 동일한 `envKey`를 공유 — 최초 실행 시 401 응답이면 한 번 입력받아 저장하는 기존 흐름 그대로 사용<br>- **API 키 설정 정리**: 자동 생성된 이름이던 `envKey`(`QWEN_CUSTOM_API_KEY_OPENAI_HTTP_10_210_169_48_8103_V1_8517E24EE066`)를 **`KOBI_VLLM_API_KEY`**로 변경, 어디서도 읽지 않던 `env.VLLM_API_KEY: "not-needed"` 항목 삭제 — 실행 스크립트는 `envKey` 값을 읽어 동작하므로 수정 불필요(재설치 시 `env`가 통째로 교체되어 키를 다시 입력받는 동작은 기존과 동일) | Claude Opus 5.5 / 개발지원팀 |
-| **v20261019_0001** | 2026-10-19 | 빌드 구성 변경 | - **기본 빌드(`./make.sh` / `./make.sh windows`)를 코어 CLI 전용으로 변경** — Desktop(GUI)·스킬 5종·Computer Use·포터블 git(MinGit)을 기본 제외(`NO_DESKTOP`/`NO_SKILLS`/`NO_COMPUTER_USE`/`NO_GIT` 기본값 1, 변수를 0으로 주면 개별 포함). Desktop 설치물이 `assets/desktop/`에 반입된 뒤 기본 빌드가 422MB까지 커진 문제 대응<br>- 이전 기본 동작(전체 포함 조합형)은 신규 타겟 **`./make.sh windows-full`**(`full`)로 이동<br>- `Install-Kobi.ps1`: 번들 git이 없을 때 "건너뜀" 안내 출력 추가(시스템 git 유무에 따라 메시지 구분)<br>- 코어 CLI 전용 배포본 `Kobi_Installer_v20261019_0001.zip` 생성(약 69MB) | Claude Opus 5.5 / 개발지원팀 |
+| **v20261019_0001** | 2026-10-19 | 빌드 구성 변경 | - **기본 빌드(`./make.sh` / `./make.sh windows`)를 코어 CLI 전용으로 변경** — Desktop(GUI)·스킬 6종·Computer Use·포터블 git(MinGit)을 기본 제외(`NO_DESKTOP`/`NO_SKILLS`/`NO_COMPUTER_USE`/`NO_GIT` 기본값 1, 변수를 0으로 주면 개별 포함). Desktop 설치물이 `assets/desktop/`에 반입된 뒤 기본 빌드가 422MB까지 커진 문제 대응<br>- 이전 기본 동작(전체 포함 조합형)은 신규 타겟 **`./make.sh windows-full`**(`full`)로 이동<br>- `Install-Kobi.ps1`: 번들 git이 없을 때 "건너뜀" 안내 출력 추가(시스템 git 유무에 따라 메시지 구분)<br>- 코어 CLI 전용 배포본 `Kobi_Installer_v20261019_0001.zip` 생성(약 69MB) | Claude Opus 5.5 / 개발지원팀 |
 | **v20261019** | 2026-10-19 | 버그 수정 | - **설치 후 `kobi` 실행 시 `Assertion failed: process_title, file c:\ws\deps\uv\src\win\util.c, line 412` 오류로 즉시 종료되는 문제 수정** — 콘솔 창 제목이 비어 있거나 이전에 실행한 프로그램이 제목을 복구하지 않고 종료해 깨진 상태로 남아 있으면, Node.js(libuv)가 시작 시 콘솔 제목(`process.title`)을 읽다가 assertion으로 중단됨<br>- 실행 스크립트에서 node 기동 직전에 콘솔 제목을 명시적으로 설정하도록 변경 — `kobi.cmd`에 `title Kobi`, `kobi.ps1`에 `$Host.UI.RawUI.WindowTitle = "Kobi"`(실패 시 무시) 추가 | Claude Opus 5.5 / 개발지원팀 |
 | **v20261015_0002** | 2026-10-15 | 연동 모델 변경 | - 사내 vLLM 연동 모델을 **Qwen3-Next-80B-A3B-Instruct → Qwen3-Coder-Next-FP8**로 변경 — `settings.json`의 `modelProviders.openai[].id`/`model.name` 및 `baseUrl` 경로(`/model/qwen3-next/v1` → `/model/qwen3-coder-next/v1`, 정보(중요)단말 :443 / 업무단말 :8080 동일) 갱신<br>- API 키는 기존과 같이 배포 설정에 넣지 않고 빈 값 유지 — 최초 실행 시 401 응답을 받으면 입력받아 저장하는 기존 흐름 사용<br>- README, 교육 자료(`kobi-training.html`), `kbpay-service-check/SKILL.md`의 연동 모델명 표기 갱신 및 `kbpay-service-check.skill` 재빌드 | Claude Opus 5.5 / 개발지원팀 |
 | **v20261015_0001** | 2026-10-15 | 코어 업데이트 | - Qwen Code 코어 모듈 **0.24.6 → 0.25.1** 업그레이드 — `npm-seed/package.json` 의존성 버전 갱신, 오프라인 캐시(`npm-cache`)/`node_modules`/`.tgz`(`qwen-code-qwen-code-0.25.1.tgz`) 전체 재생성<br>- 호환성 점검: 설정 스키마 비교 결과 Kobi `settings.json`이 사용하는 키의 삭제·기본값 변경 없음(신규 키 `agentCollaboration`/`enableStructuredRecall`/`mem0`/`mods`는 모두 기본 꺼짐), Node 요구사항(`>=22`) 동일, 스크롤 동작(`ui.useTerminalBuffer`) 동일<br>- **폐쇄망 대응**: 0.25.0부터 모델 메타데이터를 `https://models.dev/api.json`에서 24시간 주기로 조회하는 기능이 추가되어, 실행 스크립트(`kobi.ps1`, Linux `kobi`)에서 `QWEN_CODE_MODELS_DEV=off`로 외부 조회를 차단<br>- `./make.sh windows`로 테스트 빌드를 수행해 오프라인 설치본이 정상 패키징되고 번들 CLI가 `0.25.1`로 기동되는지 검증 후 테스트 산출물 정리 | Claude Opus 5.5 / 개발지원팀 |
